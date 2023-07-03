@@ -1,7 +1,12 @@
 
 // import
+
+function commandStatus(){
+
+}
+
 const Discord = require('discord.js')
-const { Client, GatewayIntentBits, MessageEmbed, ActivityType  } = require('discord.js');
+const { Client, GatewayIntentBits, MessageEmbed, ActivityType, EmbedBuilder  } = require('discord.js');
 require('dotenv/config')
 
 const client = new Client({
@@ -13,7 +18,7 @@ const client = new Client({
 });
 
 client.on('ready', () => {
-    console.log('LOG || BOT READY')
+    console.log('BOT READY')
     client.user.setStatus('available')
     client.user.setPresence({
         game: {
@@ -27,7 +32,16 @@ client.on('ready', () => {
 client.on('messageCreate', message => {
     if (message.content.startsWith('r.')) {
         if (message.content === 'r.status') {
-            message.reply('Bot is online')
+            const embuilder = new EmbedBuilder()
+            .setTitle('RustyBot Status').setDescription(`
+            Bot: Online
+            Server Location: US West
+
+            [Support Server/RustyBust Discord Server](https://discord.gg/9MHJppvmma)`);
+
+            message.channel.send({ embeds: [embuilder]})
+        } else if (message.content === 'r.help') {
+
         }
     }
 })
