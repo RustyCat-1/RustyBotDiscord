@@ -1,8 +1,14 @@
 
 // import
 
-function commandStatus(){
-
+function serverInfo(guild){
+    return guild.available ? new EmbedBuilder()
+    .setTitle(`Server information for ${guild.name} (${guild.id})`)
+    .setDescription(
+        `Creation Time: ${guild.createdAt}`
+    ) : new Discord.EmbedBuilder()
+    .setTitle('Server information for ${guild.name} (${guild.id})')
+    .setDescription('error, try again later')
 }
 
 const Discord = require('discord.js')
@@ -18,7 +24,7 @@ const client = new Client({
 });
 
 client.on('ready', () => {
-    console.log('BOT READY')
+    console.log('Bot ready!')
     client.user.setStatus('available')
     client.user.setPresence({
         game: {
@@ -31,17 +37,34 @@ client.on('ready', () => {
 
 client.on('messageCreate', message => {
     if (message.content.startsWith('r.')) {
-        if (message.content === 'r.status') {
+        if (message.content === 'r.ping') {
+            message.reply('Pong!')
+        } else if (message.content === 'r.status') {
             const embuilder = new EmbedBuilder()
-            .setTitle('RustyBot Status').setDescription(`
-            Bot: Online
+            .setTitle('RustyBot Status')
+            .setDescription(`
+            Bot Status: Online
+            Current Bot Version: Unknown - In Development
             Server Location: US West
 
-            [Support Server/RustyBust Discord Server](https://discord.gg/9MHJppvmma)`);
+            [Support Server/RustyBust Discord Server](https://discord.gg/9MHJppvmma)
+            `);
 
-            message.channel.send({ embeds: [embuilder]})
+            message.channel.send({ embeds: [ embuilder ] })
         } else if (message.content === 'r.help') {
-
+            const embuilder = new EmbedBuilder()
+            .setTitle('RustyBot Help')
+            .setDescription(`
+            We don't have a help thing yet, ask in <#1125279778325417984> (join [Our Discord Server](https://discord.gg/9MHJppvmma))
+            Prefix: \`r.\` (fixed, not changeable)
+            Commands:
+            status
+            help
+            ping
+            `);
+            message.channel.send({ embeds: [ embuilder ] })
+        } else if (message.content === 'r.serverinfo') {
+            message.channel.send({ embeds: [ serverInfo(message.guild) ] })
         }
     }
 })
