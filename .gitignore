@@ -2,3 +2,5 @@
 config/
 RustyBot.txt
 .DS_Store
+*.code-workspace
+.*.swp
