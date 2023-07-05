@@ -26,32 +26,16 @@ const client = new Client({
 client.on('ready', () => {
     console.log('Bot ready!')
     client.user.setStatus('available')
-    client.user.setPresence({
-        game: {
-            name: 'r.help',
-            type: "Playing"
-            // url: "https://www.twitch.tv/monstercat"
-        }
-    });
+    client.user.setActivity(
+        'r.help',
+        { type: ActivityType.Playing }
+    );
 })
 
 client.on('messageCreate', message => {
     if (message.content.startsWith('r.')) {
         if (message.content === 'r.ping') {
             message.reply('Pong!')
-            /*
-            // Calculates ping between sending a message and editing it, giving a nice round-trip latency.
-            // The second ping is an average latency between the bot and the websocket server (one-way, not round-trip)
-            m = message.channel.send("Pong! Calculating latency...");
-            try {
-                m.edit(`Pong! \`${m.createdTimestamp - message.createdTimestamp}ms\`
-                API Latency: \`${Math.round(client.ping)}ms\``);
-            } catch (TypeError) {
-                // message.channel.send('`FATAL: Could not edit message`');
-                message.channel.send(`Pong! \`${m.createdTimestamp - message.createdTimestamp}ms\`
-                API Latency: \`${Math.round(client.ping)}ms\``);
-            } */
-            
         } else if (message.content === 'r.status') {
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Status')
