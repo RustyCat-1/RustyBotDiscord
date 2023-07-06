@@ -33,10 +33,12 @@ client.on('ready', () => {
 })
 
 client.on('messageCreate', message => {
-    if (message.content.startsWith('r.')) {
-        if (message.content === 'r.ping') {
+    prefix = 'r.';
+    if (message.content.startsWith(prefix)) {
+        command = message.content.slice(prefix.length);
+        if (command === 'ping') {
             message.reply('Pong!')
-        } else if (message.content === 'r.status') {
+        } else if (command === 'status') {
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Status')
             .setDescription(`
@@ -48,22 +50,29 @@ client.on('messageCreate', message => {
             `);
 
             message.channel.send({ embeds: [ embuilder ] })
-        } else if (message.content === 'r.help') {
+        } else if (command === 'help') {
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Help')
             .setDescription(`
             We don't have a help thing yet, ask in <#1125279778325417984> (join [Our Discord Server](https://discord.gg/9MHJppvmma))
             Prefix: \`r.\` (fixed, not changeable)
             Commands:
-            status
-            help
-            ping
+            \`status\`
+            \`help\`
+            \`ping\`
             `);
             message.channel.send({ embeds: [ embuilder ] })
-        } else if (message.content === 'r.serverinfo') {
+        }else if (command === 'invite') {
+            const embuilder = new EmbedBuilder()
+            .setDescription(`
+            (Invite RustyBot)[https://discord.com/api/oauth2/authorize?client_id=1058133233763627159&permissions=8&scope=bot]
+            (Support Server)[https://discord.gg/9MHJppvmma]
+            `)
+        }
+        } else if (command === 'serverinfo') {
             message.channel.send({ embeds: [ serverInfo(message.guild) ] })
         }
     }
-})
+)
 
 client.login(process.env.TOKEN)
