@@ -42,7 +42,6 @@ client.on('messageCreate', message => {
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Status')
             .setDescription(`
-            Bot Status: Online
             Current Bot Version: Unknown - In Development
             Server Location: US West
 
@@ -62,17 +61,18 @@ client.on('messageCreate', message => {
             \`ping\`
             `);
             message.channel.send({ embeds: [ embuilder ] })
-        }else if (command === 'invite') {
+        } else if (command === 'invite') {
             const embuilder = new EmbedBuilder()
+            .setTitle(`Invites:`)
             .setDescription(`
-            (Invite RustyBot)[https://discord.com/api/oauth2/authorize?client_id=1058133233763627159&permissions=8&scope=bot]
-            (Support Server)[https://discord.gg/9MHJppvmma]
+            **Invite RustyBot**: [here](https://discord.com/api/oauth2/authorize?client_id=1058133233763627159&permissions=8&scope=bot).
+            **Join our support server**: [here](https://discord.gg/9MHJppvmma).
             `)
-        }
+            message.channel.send({ embeds: [ embuilder ] })
         } else if (command === 'serverinfo') {
             message.channel.send({ embeds: [ serverInfo(message.guild) ] })
         }
     }
-)
+})
 
 client.login(process.env.TOKEN)
