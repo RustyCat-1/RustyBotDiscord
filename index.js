@@ -1,5 +1,4 @@
-
-// import
+// imports
 
 function serverInfo(guild){
     return guild.available ? new EmbedBuilder()
@@ -14,6 +13,9 @@ function serverInfo(guild){
 const Discord = require('discord.js')
 const { Client, GatewayIntentBits, MessageEmbed, ActivityType, EmbedBuilder  } = require('discord.js');
 require('dotenv/config')
+const fs = require('fs')
+const config = require('./config.json')
+const os = require('os')
 
 const client = new Client({
     intents: [
@@ -33,19 +35,28 @@ client.on('ready', () => {
 })
 
 client.on('messageCreate', message => {
-    prefix = 'r.';
+    if (message.author.bot) return
+    prefix = config.prefix;
     if (message.content.startsWith(prefix)) {
         command = message.content.slice(prefix.length);
+        splits = command.split(' ')
+        base = splits[0]
+        args = splits.slice(1)
         if (command === 'ping') {
             message.reply('Pong!')
         } else if (command === 'status') {
+            computer = 'no idea lol'
+            if (os.hostname().includes('mint')) computer = 'production server'
+            else if (os.hostname().includes('Mac')) computer = 'test laptop'
+
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Status')
             .setDescription(`
-            Current Bot Version: Unknown - In Development
-            Server Location: US West
+            current bot version: N/A
+            Server location: US West
+            Current computer: ${computer}
 
-            [Support Server/RustyBust Discord Server](https://discord.gg/9MHJppvmma)
+            **[Support Server/RustyBust Discord Server](https://discord.gg/9MHJppvmma)**
             `);
 
             message.channel.send({ embeds: [ embuilder ] })
@@ -75,4 +86,4 @@ client.on('messageCreate', message => {
     }
 })
 
-client.login(process.env.TOKEN)
+client.login(config.token)

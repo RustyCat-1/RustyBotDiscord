@@ -5,3 +5,4 @@ RustyBot.txt
 *.code-workspace
 .*.swp
 node_modules
+config.json
