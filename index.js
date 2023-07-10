@@ -1,21 +1,11 @@
-// imports
-
-function serverInfo(guild){
-    return guild.available ? new EmbedBuilder()
-    .setTitle(`Server information for ${guild.name} (${guild.id})`)
-    .setDescription(
-        `Creation Time: ${guild.createdAt}`
-    ) : new Discord.EmbedBuilder()
-    .setTitle('Server information for ${guild.name} (${guild.id})')
-    .setDescription('error, try again later')
-}
-
 const Discord = require('discord.js')
 const { Client, GatewayIntentBits, MessageEmbed, ActivityType, EmbedBuilder  } = require('discord.js');
 require('dotenv/config')
 const fs = require('fs')
 const config = require('./config.json')
 const os = require('os')
+
+const ping = require('./commands/ping.js')
 
 const client = new Client({
     intents: [
@@ -29,22 +19,22 @@ client.on('ready', () => {
     console.log('Bot ready!')
     client.user.setStatus('available')
     client.user.setActivity(
-        'r.help',
+        'r.help | https://discord.gg/9MHJppvmma',
         { type: ActivityType.Playing }
     );
 })
 
 client.on('messageCreate', message => {
-    if (message.author.bot) return
+    if (message.author.bot) return // prevent the bot from wasting time processing it's own messages
     prefix = config.prefix;
     if (message.content.startsWith(prefix)) {
         command = message.content.slice(prefix.length);
         splits = command.split(' ')
         base = splits[0]
         args = splits.slice(1)
-        if (command === 'ping') {
-            message.reply('Pong!')
-        } else if (command === 'status') {
+        if (base === 'ping') {
+            ping.command(message)
+        } else if (base === 'status') {
             computer = 'no idea lol'
             if (os.hostname().includes('mint')) computer = 'production server'
             else if (os.hostname().includes('Mac')) computer = 'test laptop'
@@ -60,7 +50,7 @@ client.on('messageCreate', message => {
             `);
 
             message.channel.send({ embeds: [ embuilder ] })
-        } else if (command === 'help') {
+        } else if (base === 'help') {
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Help')
             .setDescription(`
@@ -72,7 +62,7 @@ client.on('messageCreate', message => {
             \`ping\`
             `);
             message.channel.send({ embeds: [ embuilder ] })
-        } else if (command === 'invite') {
+        } else if (base === 'invite') {
             const embuilder = new EmbedBuilder()
             .setTitle(`Invites:`)
             .setDescription(`
@@ -80,8 +70,15 @@ client.on('messageCreate', message => {
             **Join our support server**: [here](https://discord.gg/9MHJppvmma).
             `)
             message.channel.send({ embeds: [ embuilder ] })
-        } else if (command === 'serverinfo') {
-            message.channel.send({ embeds: [ serverInfo(message.guild) ] })
+        } else if (base === 'analyzeArgs') {
+            const embuilder = new EmbedBuilder()
+            .setTitle('Analysis of this Command and Args')
+            .setDescription(`
+Command prefix: \`${prefix}\`
+Command: \`[]\`
+Command arguments: \`[${args.join(', ')}]\`
+Full command: \`${message.content}\`
+            `)
         }
     }
 })
