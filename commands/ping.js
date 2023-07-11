@@ -7,14 +7,14 @@ module.exports = {
         .setDescription(`
 Calculating latency...`)
         recievedMessage.channel.send( { embeds: [ emBuilder ] } )
-        .then((msg) => {
+        .then((message) => {
             const emBuilder = new Discord.EmbedBuilder()
             .setTitle('RustyBot Latency Test')
             .setDescription(`
-            Latency: \`${msg.createdTimestamp - recievedMessage.createdTimestamp}ms\`
+            Latency: \`${message.createdTimestamp - recievedMessage.createdTimestamp}ms\`
             `)
             .setTimestamp()
-            msg.edit({ "embeds": [ emBuilder ] })
+            message.edit({ "embeds": [ emBuilder ] })
         })
     }
 }

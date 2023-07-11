@@ -22,7 +22,7 @@ client.on('ready', () => {
         'r.help | https://discord.gg/9MHJppvmma',
         { type: ActivityType.Playing }
     );
-})
+});
 
 client.on('messageCreate', message => {
     if (message.author.bot) return // prevent the bot from wasting time processing it's own messages
@@ -81,6 +81,6 @@ Full command: \`${message.content}\`
             `)
         }
     }
-})
+});
 
-client.login(config.token)
+client.login(config.token); 
