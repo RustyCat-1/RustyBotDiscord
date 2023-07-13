@@ -6,6 +6,7 @@ const config = require('./config.json')
 const os = require('os')
 
 const ping = require('./commands/ping.js')
+const whyBlacklist = require('./commands/whyBlacklist.js')
 
 const client = new Client({
     intents: [
@@ -25,8 +26,22 @@ client.on('ready', () => {
 });
 
 client.on('messageCreate', message => {
-    if (message.author.bot) return // prevent the bot from wasting time processing it's own messages
+    if (message.author.bot) return // prevent the bot from wasting time 
     prefix = config.prefix;
+    if (message.guildId == '952018658664804424') {
+        whyBlacklist.command(message)
+        return
+    }
+    if (message.content == `<@${client.user.id}>`) {
+        var emBuilder = new EmbedBuilder()
+        .setTitle('Hi, welcome to RustyBot!')
+        .setDescription('Type r.help to get started!')
+    message.channel.send({
+            'content': `If you can\'t see anything else, you need to turn go to Settings -> Text & Images and enable 'Embeds and Link Previews'.`,
+            'embeds': [ emBuilder ]
+        })
+        return
+    }
     if (message.content.startsWith(prefix)) {
         command = message.content.slice(prefix.length);
         splits = command.split(' ')
@@ -37,7 +52,7 @@ client.on('messageCreate', message => {
         } else if (base === 'status') {
             computer = 'no idea lol'
             if (os.hostname().includes('mint')) computer = 'production server'
-            else if (os.hostname().includes('Mac')) computer = 'test laptop'
+            else if (os.hostname().includes('Mac')) computer = 'Mac/test laptop'
 
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Status')
@@ -79,6 +94,8 @@ Command: \`[]\`
 Command arguments: \`[${args.join(', ')}]\`
 Full command: \`${message.content}\`
             `)
+        } else if (base === 'whyBlacklist') {
+            whyBlacklist.info(message)
         }
     }
 });
