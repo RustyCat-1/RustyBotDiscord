@@ -57,7 +57,7 @@ client.on('messageCreate', message => {
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Status')
             .setDescription(`
-            current bot version: N/A
+            current bot version: Alpha v0.1
             Server location: US West
             Current computer: ${computer}
 

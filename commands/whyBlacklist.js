@@ -22,7 +22,7 @@ This means that your server is not allowed to use our bot services.
 **Why is this?**
 This may be because you are impersonating our support server, or violating the Discord ToS.
 **How can I be un-blacklisted?**
-The blacklist is moderated manually, so please ask in [https://discord.gg/9MHJppvmma](our support server).
+The blacklist is moderated manually, so please ask in our support server at https://discord.gg/9MHJppvmma.
 `)
             message.channel.send( { embeds: [ emBuilder ] } )
     }
