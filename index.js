@@ -71,10 +71,6 @@ client.on('messageCreate', message => {
             .setDescription(`
             We don't have a help thing yet, ask in <#1125279778325417984> (join [Our Discord Server](https://discord.gg/9MHJppvmma))
             Prefix: \`r.\` (fixed, not changeable)
-            Commands:
-            \`status\`
-            \`help\`
-            \`ping\`
             `);
             message.channel.send({ embeds: [ embuilder ] })
         } else if (base === 'invite') {
@@ -94,6 +90,7 @@ Command: \`[]\`
 Command arguments: \`[${args.join(', ')}]\`
 Full command: \`${message.content}\`
             `)
+            message.channel.send({embeds:[embuilder]})
         } else if (base === 'whyBlacklist') {
             whyBlacklist.info(message)
         }
