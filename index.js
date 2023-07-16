@@ -1,5 +1,5 @@
 const Discord = require('discord.js')
-const { Client, GatewayIntentBits, MessageEmbed, ActivityType, EmbedBuilder  } = require('discord.js');
+const { Client, GatewayIntentBits, MessageEmbed, ActivityType, EmbedBuilder } = require('discord.js');
 require('dotenv/config')
 const fs = require('fs')
 const config = require('./config.json')
@@ -29,7 +29,8 @@ client.on('messageCreate', message => {
     if (message.author.bot) return // prevent the bot from wasting time 
     prefix = config.prefix;
     if (message.guildId == '952018658664804424') {
-        whyBlacklist.command(message)
+        if (message.content === prefix + 'whyBlacklist') whyBlacklist.info(message)
+        else whyBlacklist.command(message)
         return
     }
     if (message.content == `<@${client.user.id}>`) {
@@ -50,7 +51,7 @@ client.on('messageCreate', message => {
         if (base === 'ping') {
             ping.command(message)
         } else if (base === 'status') {
-            computer = 'no idea lol'
+            computer = 'unknown'
             if (os.hostname().includes('mint')) computer = 'production server'
             else if (os.hostname().includes('Mac')) computer = 'Mac/test laptop'
 
@@ -66,16 +67,19 @@ client.on('messageCreate', message => {
 
             message.channel.send({ embeds: [ embuilder ] })
         } else if (base === 'help') {
-            const embuilder = new EmbedBuilder()
-            .setTitle('RustyBot Help')
-            .setDescription(`
-            We don't have a help thing yet, ask in <#1125279778325417984> (join [Our Discord Server](https://discord.gg/9MHJppvmma))
-            Prefix: \`r.\` (fixed, not changeable)
-            `);
+            if (args.length < 1) {
+                const embuilder = new EmbedBuilder()
+                .setTitle('RustyBot Help')
+                .setDescription(`
+                Type \`${prefix}help <command>\` for help on a specific command
+                Support: <#1125279778325417984> (join [Our Discord Server](https://discord.gg/9MHJppvmma))
+                Prefix: \`${prefix}\` (fixed, not changeable)
+                `);
+            }
             message.channel.send({ embeds: [ embuilder ] })
         } else if (base === 'invite') {
             const embuilder = new EmbedBuilder()
-            .setTitle(`Invites:`)
+            .setTitle('Invites:')
             .setDescription(`
             **Invite RustyBot**: [here](https://discord.com/api/oauth2/authorize?client_id=1058133233763627159&permissions=8&scope=bot).
             **Join our support server**: [here](https://discord.gg/9MHJppvmma).
@@ -85,12 +89,12 @@ client.on('messageCreate', message => {
             const embuilder = new EmbedBuilder()
             .setTitle('Analysis of this Command and Args')
             .setDescription(`
-Command prefix: \`${prefix}\`
-Command: \`[]\`
-Command arguments: \`[${args.join(', ')}]\`
-Full command: \`${message.content}\`
+            Command prefix: \`${prefix}\`
+            Command: \`[]\`
+            Command arguments: \`[${args.join(', ')}]\`
+            Full command: \`${message.content}\`
             `)
-            message.channel.send({embeds:[embuilder]})
+            message.channel.send( { embeds: [ embuilder ] })
         } else if (base === 'whyBlacklist') {
             whyBlacklist.info(message)
         }
