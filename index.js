@@ -67,15 +67,13 @@ client.on('messageCreate', message => {
 
             message.channel.send({ embeds: [ embuilder ] })
         } else if (base === 'help') {
-            if (args.length < 1) {
-                const embuilder = new EmbedBuilder()
-                .setTitle('RustyBot Help')
-                .setDescription(`
-                Type \`${prefix}help <command>\` for help on a specific command
-                Support: <#1125279778325417984> (join [Our Discord Server](https://discord.gg/9MHJppvmma))
-                Prefix: \`${prefix}\` (fixed, not changeable)
-                `);
-            }
+            const embuilder = new EmbedBuilder()
+            .setTitle('RustyBot Help')
+            .setDescription(`
+            Type \`${prefix}help <command>\` for help on a specific command
+            Support: <#1125279778325417984> (join [Our Discord Server](https://discord.gg/9MHJppvmma))
+            Prefix: \`${prefix}\` (fixed, not changeable)
+            `);
             message.channel.send({ embeds: [ embuilder ] })
         } else if (base === 'invite') {
             const embuilder = new EmbedBuilder()
