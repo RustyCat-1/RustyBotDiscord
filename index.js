@@ -52,7 +52,7 @@ client.on('messageCreate', message => {
             ping.command(message)
         } else if (base === 'status') {
             computer = 'unknown'
-            if (os.hostname().includes('mint')) computer = 'production server'
+            if (os.hostname().includes('mint')) computer = 'linux/production server'
             else if (os.hostname().includes('Mac')) computer = 'Mac/test laptop'
 
             const embuilder = new EmbedBuilder()
@@ -89,10 +89,10 @@ client.on('messageCreate', message => {
             const embuilder = new EmbedBuilder()
             .setTitle('Analysis of this Command and Args')
             .setDescription(`
-            Command prefix: \`${prefix}\`
-            Command: \`[]\`
-            Command arguments: \`[${args.join(', ')}]\`
-            Full command: \`${message.content}\`
+Command prefix: \`${prefix}\`
+Command: \`[]\`
+Command arguments: \`[${args.join(', ')}]\`
+Full command: \`${message.content}\`
             `)
             message.channel.send( { embeds: [ embuilder ] })
         } else if (base === 'whyBlacklist') {
