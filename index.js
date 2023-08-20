@@ -19,7 +19,7 @@ const client = new Client({
 
 let blacklist;
 try {
-    blacklist = fs.readFileSync('./config/blacklist.txt', 'utf8');
+    blacklist = fs.readFileSync('./config/blacklist/server.txt', 'utf8');
 } catch (err) {
     console.log(err);
     blacklist = ''
@@ -68,7 +68,7 @@ client.on('messageCreate', message => {
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Status')
             .setDescription(`
-            current bot version: v0.3.1
+            current bot version: v0.2.0
             Server location: US West
             Current computer: ${computer}
 
