@@ -7,6 +7,7 @@ const os = require('os')
 
 const ping = require('./commands/ping.js')
 const whyBlacklist = require('./commands/whyBlacklist.js')
+const help = require('./commands/help.js')
 
 const client = new Client({
     intents: [
@@ -49,7 +50,7 @@ client.on('messageCreate', message => {
         base = splits[0]
         args = splits.slice(1)
         if (base === 'ping') {
-            ping.command(message)
+            ping.command(message, client.ws.ping)
         } else if (base === 'status') {
             computer = 'unknown'
             if (os.hostname().includes('mint')) computer = 'linux/production server'
@@ -67,14 +68,7 @@ client.on('messageCreate', message => {
 
             message.channel.send({ embeds: [ embuilder ] })
         } else if (base === 'help') {
-            const embuilder = new EmbedBuilder()
-            .setTitle('RustyBot Help')
-            .setDescription(`
-            Type \`${prefix}help <command>\` for help on a specific command
-            Support: <#1125279778325417984> (join [Our Discord Server](https://discord.gg/9MHJppvmma))
-            Prefix: \`${prefix}\` (fixed, not changeable)
-            `);
-            message.channel.send({ embeds: [ embuilder ] })
+            help.command(message, args)
         } else if (base === 'invite') {
             const embuilder = new EmbedBuilder()
             .setTitle('Invites:')
