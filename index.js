@@ -17,6 +17,14 @@ const client = new Client({
     ]
 });
 
+let blacklist;
+try {
+    blacklist = fs.readFileSync('./config/blacklist.txt', 'utf8');
+} catch (err) {
+    console.log(err);
+    blacklist = ''
+}
+
 client.on('ready', () => {
     console.log('Bot ready!')
     client.user.setStatus('available')
@@ -29,7 +37,7 @@ client.on('ready', () => {
 client.on('messageCreate', message => {
     if (message.author.bot) return // prevent the bot from wasting time 
     prefix = config.prefix;
-    if (message.guildId == '952018658664804424') {
+    if (blacklist.includes(message.guildId + '\n')) { // wow so much overhead
         if (message.content === prefix + 'whyBlacklist') whyBlacklist.info(message)
         else whyBlacklist.command(message)
         return
@@ -53,13 +61,14 @@ client.on('messageCreate', message => {
             ping.command(message, client.ws.ping)
         } else if (base === 'status') {
             computer = 'unknown'
+            // remove following lines with `os.hostname()` if self-hosting or using as own bot
             if (os.hostname().includes('mint')) computer = 'linux/production server'
             else if (os.hostname().includes('Mac')) computer = 'Mac/test laptop'
 
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Status')
             .setDescription(`
-            current bot version: Alpha v0.1
+            current bot version: v0.3.1
             Server location: US West
             Current computer: ${computer}
 

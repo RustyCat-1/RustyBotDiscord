@@ -4,13 +4,12 @@ const fs = require('fs')
 module.exports = {
     commandsList: fs.readFileSync('./commands.txt', 'utf8'),
     command: (message, args) => {
-        if (args.length >0) {
-            message.channel.reply('Feature under development, maybe will add in the next version?')
-            //#if (this.commandsList.includes(args[0])) {
+        // if (args.length >0) {
+        //     message.channel.reply('Feature under development, maybe will add in the next version?')
+        //     //#if (this.commandsList.includes(args[0])) {
 
-            //}
-        }
-        else if (args.length <= 0) {
+        //     //}
+        // } else if (args.length <= 0) {
             const embuilder = new EmbedBuilder()
                 .setTitle('RustyBot Help')
                 .setDescription(`
@@ -19,6 +18,6 @@ module.exports = {
                 Prefix: \`${prefix}\` (fixed, not changeable)
                 `);
             message.channel.send({ embeds: [ embuilder ] })
-        }
+        // }
     }  
 }
