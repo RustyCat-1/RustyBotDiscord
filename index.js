@@ -7,7 +7,8 @@ const os = require('os')
 
 const ping = require('./commands/ping.js')
 const whyBlacklist = require('./commands/whyBlacklist.js')
-const help = require('./commands/help.js')
+const help = require('./commands/help.js');
+//const command = require('nodemon/lib/config/command');
 
 const client = new Client({
     intents: [
@@ -57,6 +58,7 @@ client.on('messageCreate', message => {
         splits = command.split(' ')
         base = splits[0]
         args = splits.slice(1)
+        argc = args.length
         if (base === 'ping') {
             ping.command(message, client.ws.ping)
         } else if (base === 'status') {
@@ -77,7 +79,11 @@ client.on('messageCreate', message => {
 
             message.channel.send({ embeds: [ embuilder ] })
         } else if (base === 'help') {
-            help.command(message, args)
+            if (argc > 0) {
+                help.docs(message, args[0])
+            } else {
+                help.command(message)
+            }
         } else if (base === 'invite') {
             const embuilder = new EmbedBuilder()
             .setTitle('Invites:')
