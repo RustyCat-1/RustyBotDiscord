@@ -1,8 +1,8 @@
 {
-    "ping":{
-        "description":"Tests the latency."
-    },
-    "help":{
-        "description":"Gets help on a command or the bot."
+    "ping": {
+        "description": "Tests the latency."
+    }, 
+    "help": {
+        "description": "Gets help on a command or the bot."
     }
 }

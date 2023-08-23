@@ -2,10 +2,10 @@ const Discord = require('discord.js');
 const { Client, GatewayIntentBits, ActivityType, EmbedBuilder } = require('discord.js');
 // require('dotenv/config');
 const fs = require('node:fs');
-const config = require('./config.json');
 const os = require('node:os');
 
 // local imports
+const config = require('./config.json');
 const ping = require('./commands/ping.js');
 const whyBlacklist = require('./commands/whyBlacklist.js');
 const help = require('./commands/help.js');
@@ -24,11 +24,10 @@ let blacklist;
 try {
     blacklist = fs.readFileSync('./config/blacklist/server.txt', 'utf8');
 } catch (err) {
-    console.log(err);
+    console.error(err);
     blacklist = '';
 }
 
-// main code begin
 client.on('ready', () => {
     console.log('Bot ready!')
     client.user.setStatus('available')
@@ -39,14 +38,14 @@ client.on('ready', () => {
 });
 
 client.on('messageCreate', message => {
-    if (message.author.bot) return; // prevent the bot from wasting time 
-    prefix = config.prefix;
-    if (blacklist.includes(message.guildId + '\n')) { // wow so much overhead
+    if (message.author.bot) return;
+    const prefix = config.prefix;
+    if (blacklist.includes(message.guildId + '\n')) {
         if (message.content === prefix + 'whyBlacklist') whyBlacklist.info(message);
         else whyBlacklist.command(message);
         return;
     }
-    if (message.content == `<@${client.user.id}>`) {
+    if (message.content === `<@${client.user.id}>`) {
         var emBuilder = new EmbedBuilder()
         .setTitle('Hi, welcome to RustyBot!')
         .setDescription('Type r.help to get started!')
@@ -57,11 +56,11 @@ client.on('messageCreate', message => {
         return;
     }
     if (message.content.startsWith(prefix)) {
-        command = message.content.slice(prefix.length);
-        splits = command.split(' ');
-        base = splits[0];
-        args = splits.slice(1);
-        argc = args.length;
+        const command = message.content.slice(prefix.length);
+        const splits = command.split(' ');
+        const base = splits[0];
+        const args = splits.slice(1);
+        const argc = args.length;
         if (base === 'ping') {
             ping.command(message, client.ws.ping);
         } else if (base === 'status') {
@@ -106,11 +105,11 @@ Command: \`[]\`
 Command arguments: \`[${args.join(', ')}]\`
 Full command: \`${message.content}\`
             `);
-            message.channel.send( { embeds: [ embuilder ] })
+            message.channel.send({ embeds: [ embuilder ] })
         } else if (base === 'whyBlacklist') {
             whyBlacklist.info(message);
         }
     }
 });
 
-client.login(config.token); 
+client.login(config.token);
