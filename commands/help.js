@@ -1,17 +1,15 @@
 const { EmbedBuilder } = require('discord.js')
-const fs = require('fs')
+const fs = require('node:fs')
 const docs = require('./help/docs.json')
 
 module.exports = {
-    commandsList: fs.readFileSync('./commands.txt', 'utf8'),
-    command: (message) => {
-            let commandsList;
-            try {
-                commandsList = fs.readFileSync('../config/blacklist/server.txt', 'utf8');
-            } catch (err) {
-                console.error(err);
-                commandsList = 'Could not read "config/blacklist/server.txt"';
-            }
+    commandsList: `ping
+    status
+    help
+    invite
+    analyzeArgs`,
+    command: (message, prefix) => {
+            var commandsList = this.commandsList!='undefined' ? this.commandsList : 'error';
             const embuilder = new EmbedBuilder()
                 .setTitle('RustyBot Help')
                 .setDescription(`
@@ -19,12 +17,9 @@ module.exports = {
                 Support: <#1125279778325417984> (join [Our Discord Server](https://discord.gg/9MHJppvmma))
                 Prefix: \`${prefix}\` (fixed, not changeable)
                 List of commands:
-                \`\`\`
-                ${commandsList}
-                \`\`\`
+                \`${commandsList} \`
                 `);
             message.channel.send({ embeds: [ embuilder ] })
-        // }
     },
     docs: (message, command) => {
         let embuilder

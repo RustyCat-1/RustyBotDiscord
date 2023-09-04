@@ -1,5 +1,0 @@
-ping
-status
-help
-invite
-analyzeArgs

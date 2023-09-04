@@ -86,7 +86,7 @@ client.on('messageCreate', message => {
             if (argc > 0) {
                 help.docs(message, args[0]);
             } else {
-                help.command(message);
+                help.command(message, prefix);
             }
         } else if (base === 'invite') {
             const embuilder = new EmbedBuilder()

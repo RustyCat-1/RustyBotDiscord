@@ -1,8 +1,11 @@
 {
     "ping": {
-        "description": "Tests the latency."
+        "description": "Tests the round-trip and API latency of the bot."
     }, 
     "help": {
         "description": "Gets help on a command or the bot."
+    },
+    "status": {
+        "description": "Makes sure the bot is online."
     }
 }
