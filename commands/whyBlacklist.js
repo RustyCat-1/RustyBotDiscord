@@ -8,10 +8,10 @@ module.exports = {
             .setTitle('Server blacklist detected!')
             .setDescription(`We are sorry for the inconvience but our bot is blacklisted on this server. Please join [our support server](https://discord.gg/9MHJppvmma) to run commands. 
     Type \`r.whyBlacklist\` or ping <@${client.user.id}> for more information.`)
-            message.channel.send({ embeds: [ emBuilder ]})
+            message.channel.send({ embeds: [ emBuilder ]});
         }
         if (message.content == `<@${client.user.id}>` || message.content == `r.whyBlacklist`) {
-            this.info()
+            this.info();
         }
     },
     info: (message) => {
@@ -23,7 +23,7 @@ This means that your server is not allowed to use our bot services.
 This may be because you are impersonating our support server, or violating the Discord ToS.
 **How can I be un-blacklisted?**
 The blacklist is moderated manually, so please ask in our support server at https://discord.gg/9MHJppvmma.
-`)
-            message.channel.send({ embeds: [ emBuilder ] })
+`);
+            message.channel.send({ embeds: [ emBuilder ] });
     }
 }

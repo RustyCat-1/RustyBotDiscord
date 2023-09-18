@@ -15,7 +15,7 @@ Calculating latency...`)
             API Latency: \`${ping}ms\`
             `)
             .setTimestamp();
-            message.edit({ "embeds": [ emBuilder ] })
+            message.edit({ "embeds": [ emBuilder ] });
         })
     }
 }

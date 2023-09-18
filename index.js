@@ -4,13 +4,11 @@ const { Client, GatewayIntentBits, ActivityType, EmbedBuilder } = require('disco
 const fs = require('node:fs');
 const os = require('node:os');
 
-// local imports
 const config = require('./config.json');
 const ping = require('./commands/ping.js');
 const whyBlacklist = require('./commands/whyBlacklist.js');
 const help = require('./commands/help.js');
 
-// client init
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -50,7 +48,7 @@ client.on('messageCreate', message => {
         .setTitle('Hi, welcome to RustyBot!')
         .setDescription('Type r.help to get started!')
     message.channel.send({
-            'content': `If you can\'t see anything else, you need to turn go to Settings -> Text & Images and enable 'Embeds and Link Previews'.`,
+            'content': `If you can\'t see anything below this message, you need to turn go to \`Settings -> Text & Images\` and enable 'Embeds and Link Previews'.`,
             'embeds': [ emBuilder ]
         });
         return;
@@ -66,19 +64,17 @@ client.on('messageCreate', message => {
         } else if (base === 'status') {
             let computer = 'custom_hosted';
 
-            // remove following 3 lines if self-hosting or using as own bot
-            computer = 'unknown';
             if (os.hostname().includes('mint')) computer = 'linux/production server';
             else if (os.hostname().includes('Mac')) computer = 'Mac/test laptop';
 
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Status')
             .setDescription(`
-            current bot version: v0.2.1
-            Server location: US West
+            current bot version: v0.2.3
+            Server physical location: US West Coast
             Current computer: ${computer}
 
-            **[Support Server/RustyBust Discord Server](https://discord.gg/9MHJppvmma)**
+            **[Support Server](https://discord.gg/9MHJppvmma)**
             `);
 
             message.channel.send({ embeds: [ embuilder ] });
@@ -95,7 +91,7 @@ client.on('messageCreate', message => {
             **Invite RustyBot**: [here](https://discord.com/api/oauth2/authorize?client_id=1058133233763627159&permissions=8&scope=bot).
             **Join our support server**: [here](https://discord.gg/9MHJppvmma).
             `);
-            message.channel.send({ embeds: [ embuilder ] })
+            message.channel.send({ embeds: [ embuilder ] });
         } else if (base === 'analyzeArgs') {
             const embuilder = new EmbedBuilder()
             .setTitle('Analysis of this Command and Args')
@@ -105,7 +101,7 @@ Command: \`[]\`
 Command arguments: \`[${args.join(', ')}]\`
 Full command: \`${message.content}\`
             `);
-            message.channel.send({ embeds: [ embuilder ] })
+            message.channel.send({ embeds: [ embuilder ] });
         } else if (base === 'whyBlacklist') {
             whyBlacklist.info(message);
         }
