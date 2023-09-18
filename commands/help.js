@@ -1,15 +1,14 @@
 const { EmbedBuilder } = require('discord.js')
-const fs = require('node:fs')
+// const fs = require('node:fs')
 const docs = require('./help/docs.json')
 
 module.exports = {
-    commandsList: `ping
+    command: (message, prefix) => {
+        commandsList = `ping
     status
     help
     invite
-    analyzeArgs`,
-    command: (message, prefix) => {
-            var commandsList = this.commandsList!='undefined' ? this.commandsList : 'error';
+    analyzeArgs`
             const embuilder = new EmbedBuilder()
                 .setTitle('RustyBot Help')
                 .setDescription(`
