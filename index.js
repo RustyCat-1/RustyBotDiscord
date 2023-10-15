@@ -78,7 +78,7 @@ client.on('messageCreate', message => {
             if (argc > 0) {
                 help.docs(message, args[0]);
             } else {
-                help.command(message, prefix);
+                help.command(message);
             }
         } else if (base === 'invite') {
             const embuilder = new EmbedBuilder()
@@ -94,9 +94,14 @@ client.on('messageCreate', message => {
     }
 });
 
-if (config.mode === 'test')
+if (config.mode === 'test') {
+    console.log('Logging in using test mode...');
     client.login(tokenfile.test_token);
-else if (config.mode === 'production')
+} else if (config.mode === 'production') {
+    console.log('');
     client.login(tokenfile.production_token);
-else
-    client.login(tokenfile.token)
+}
+else {
+    console.log('[WARNING] invalid bot mode specified, defaulting test mode')
+    client.login(tokenfile.test_token)
+}
