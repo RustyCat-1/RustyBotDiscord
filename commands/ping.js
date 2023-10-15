@@ -12,7 +12,7 @@ Calculating latency...`)
             .setTitle('RustyBot Latency Test')
             .setDescription(`
             Latency: \`${message.createdTimestamp - recievedMessage.createdTimestamp}ms\`
-            API Latency: \`${ping}ms\`
+            Average API Latency: \`${ping}ms\`
             `)
             .setTimestamp();
             message.edit({ "embeds": [ emBuilder ] });

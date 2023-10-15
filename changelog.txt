@@ -1,0 +1,7 @@
+v0.3 changes:
+Removed "analyzeArgs" command due to lack of use.
+Moved 'config.json' to 'token.json'. The new file config.json is for nonprivate information.
+Updated README.md
+Made sure every file (excluding node_modules) has an empty line at the end
+
+Rewordings, bugfixes, enhancements.

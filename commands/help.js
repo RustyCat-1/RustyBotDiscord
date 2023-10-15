@@ -8,7 +8,7 @@ module.exports = {
 status
 help
 invite
-analyzeArgs`
+info`
         const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Help')
             .setDescription(`

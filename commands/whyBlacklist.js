@@ -18,12 +18,13 @@ module.exports = {
         emBuilder = new EmbedBuilder()
             .setTitle('Server blacklist info')
             .setDescription(`**What does this mean?**
-This means that your server is not allowed to use our bot services.
+This means that your server or user is not allowed to use our bot services.
 **Why is this?**
-This may be because you are impersonating our support server, or violating the Discord ToS.
+This may be because you are impersonating our support server, or violating the Discord Terms of Service.
 **How can I be un-blacklisted?**
 The blacklist is moderated manually, so please ask in our support server at https://discord.gg/9MHJppvmma.
+If you are banned from that server, you are not eligible for an un-blacklist request at this time.
 `);
-            message.channel.send({ embeds: [ emBuilder ] });
+        message.channel.send({ embeds: [ emBuilder ] });
     }
 }

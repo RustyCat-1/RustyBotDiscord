@@ -4,7 +4,8 @@ const { Client, GatewayIntentBits, ActivityType, EmbedBuilder } = require('disco
 const fs = require('node:fs');
 const os = require('node:os');
 
-const config = require('./config.json');
+const tokenfile = require('./token.json');
+const config = require('./config.json')
 const ping = require('./commands/ping.js');
 const whyBlacklist = require('./commands/whyBlacklist.js');
 const help = require('./commands/help.js');
@@ -17,33 +18,31 @@ const client = new Client({
     ]
 });
 
-
-let blacklist;
-try {
-    blacklist = fs.readFileSync('./config/blacklist/server.txt', 'utf8');
-} catch (err) {
-    console.error(err);
-    blacklist = '';
-}
+const serverBlacklist = fs.readFileSync('./config/blacklist/server.txt', 'utf8');
+const userBlacklist = fs.readFileSync('./config/blacklist/server.txt', 'utf8');
 
 client.on('ready', () => {
     console.log('Bot ready!')
     client.user.setStatus('available')
+    if (config.mode === 'production')
     client.user.setActivity(
         'r.help | https://discord.gg/9MHJppvmma',
+        { type: ActivityType.Playing }
+    );
+    else if (config.mode === 'production')
+    client.user.setActivity(
+        'r.help in Test Mode. Please report any bugs you find.',
         { type: ActivityType.Playing }
     );
 });
 
 client.on('messageCreate', message => {
     if (message.author.bot) return;
-    const prefix = config.prefix;
-    if (blacklist.includes(message.guildId + '\n')) {
-        if (message.content === prefix + 'whyBlacklist') whyBlacklist.info(message);
-        else whyBlacklist.command(message);
+    if (serverBlacklist.includes(message.guildId + '\n') | 
+        userBlacklist.includes(message.author.id + '\n')) {
         return;
     }
-    if (message.content === `<@${client.user.id}>`) {
+        if (message.content === `<@${client.user.id}>`) {
         var emBuilder = new EmbedBuilder()
         .setTitle('Hi, welcome to RustyBot!')
         .setDescription('Type r.help to get started!')
@@ -53,6 +52,8 @@ client.on('messageCreate', message => {
         });
         return;
     }
+
+    const prefix = config.prefix;
     if (message.content.startsWith(prefix)) {
         const command = message.content.slice(prefix.length);
         const splits = command.split(' ');
@@ -62,17 +63,12 @@ client.on('messageCreate', message => {
         if (base === 'ping') {
             ping.command(message, client.ws.ping);
         } else if (base === 'status') {
-            let computer = 'custom_hosted';
-
-            if (os.hostname().includes('mint')) computer = 'linux/production server';
-            else if (os.hostname().includes('Mac')) computer = 'Mac/test laptop';
-
+            
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Status')
             .setDescription(`
-            current bot version: v0.2.3
+            current bot version: ${config.version}
             Server physical location: US West Coast
-            Current computer: ${computer}
 
             **[Support Server](https://discord.gg/9MHJppvmma)**
             `);
@@ -92,20 +88,10 @@ client.on('messageCreate', message => {
             **Join our support server**: [here](https://discord.gg/9MHJppvmma).
             `);
             message.channel.send({ embeds: [ embuilder ] });
-        } else if (base === 'analyzeArgs') {
-            const embuilder = new EmbedBuilder()
-            .setTitle('Analysis of this Command and Args')
-            .setDescription(`
-Command prefix: \`${prefix}\`
-Command: \`[]\`
-Command arguments: \`[${args.join(', ')}]\`
-Full command: \`${message.content}\`
-            `);
-            message.channel.send({ embeds: [ embuilder ] });
         } else if (base === 'whyBlacklist') {
             whyBlacklist.info(message);
         }
     }
 });
 
-client.login(config.token);
+client.login(tokenfile.token);
