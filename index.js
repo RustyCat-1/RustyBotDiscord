@@ -25,15 +25,15 @@ client.on('ready', () => {
     console.log('Bot ready!')
     client.user.setStatus('available')
     if (config.mode === 'production')
-    client.user.setActivity(
-        'r.help | https://discord.gg/9MHJppvmma',
-        { type: ActivityType.Playing }
-    );
-    else if (config.mode === 'production')
-    client.user.setActivity(
-        'r.help in Test Mode. Please report any bugs you find.',
-        { type: ActivityType.Playing }
-    );
+        client.user.setActivity(
+            'r.help | https://discord.gg/9MHJppvmma',
+            { type: ActivityType.Playing }
+        );
+    else if (config.mode === 'test')
+        client.user.setActivity(
+            'r.help in Test Mode. Please report any bugs you find.',
+            { type: ActivityType.Playing }
+        );
 });
 
 client.on('messageCreate', message => {
@@ -94,4 +94,9 @@ client.on('messageCreate', message => {
     }
 });
 
-client.login(tokenfile.token);
+if (config.mode === 'test')
+    client.login(tokenfile.test_token);
+else if (config.mode === 'production')
+    client.login(tokenfile.production_token);
+else
+    client.login(tokenfile.token)
