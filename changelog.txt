@@ -1,6 +1,4 @@
-v0.3.1 changes:
-Added logging statements to login call.
-Changed the way prefix is read to commands. 
-Removed doc entry for r.info.
+v0.3.2 changes:
+Made invalid config.mode throw an error.
 
 Rewordings, bugfixes, enhancements.

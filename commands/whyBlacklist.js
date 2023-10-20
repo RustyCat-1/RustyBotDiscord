@@ -16,8 +16,8 @@ module.exports = {
     },
     info: (message) => {
         emBuilder = new EmbedBuilder()
-            .setTitle('Server blacklist info')
-            .setDescription(`**What does this mean?**
+        .setTitle('Server blacklist info')
+        .setDescription(`**What does this mean?**
 This means that your server or user is not allowed to use our bot services.
 **Why is this?**
 This may be because you are impersonating our support server, or violating the Discord Terms of Service.

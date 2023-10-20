@@ -17,7 +17,7 @@ invite`
             Support: <#1125279778325417984> (join [Our Discord Server](https://discord.gg/9MHJppvmma))
             Prefix: \`${prefix}\` (fixed, not changeable)
             List of commands:
-            \`${commandsList} \`
+            \`${commandsList}\`
             `);
         message.channel.send({ embeds: [ embuilder ] });
     },

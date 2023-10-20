@@ -2,7 +2,7 @@ const Discord = require('discord.js');
 const { Client, GatewayIntentBits, ActivityType, EmbedBuilder } = require('discord.js');
 // require('dotenv/config');
 const fs = require('node:fs');
-const os = require('node:os');
+// const os = require('node:os');
 
 const tokenfile = require('./token.json');
 const config = require('./config.json')
@@ -31,7 +31,7 @@ client.on('ready', () => {
         );
     else if (config.mode === 'test')
         client.user.setActivity(
-            'r.help in Test Mode. Please report any bugs you find.',
+            'RustyBot is running in Test Mode. Please report any bugs you find to `rustybust`.',
             { type: ActivityType.Playing }
         );
 });
@@ -42,14 +42,13 @@ client.on('messageCreate', message => {
         userBlacklist.includes(message.author.id + '\n')) {
         return;
     }
-        if (message.content === `<@${client.user.id}>`) {
+    if (message.content === `<@${client.user.id}>`) {
         var emBuilder = new EmbedBuilder()
         .setTitle('Hi, welcome to RustyBot!')
         .setDescription('Type r.help to get started!')
     message.channel.send({
-            'content': `If you can\'t see anything below this message, you need to turn go to \`Settings -> Text & Images\` and enable 'Embeds and Link Previews'.`,
-            'embeds': [ emBuilder ]
-        });
+            'content': `If you can\'t see anything below this message, you need to turn go to \`Settings\` -> \`Text & Images\` and enable \`Embeds and Link Previews\`.`,
+            'embeds': [emBuilder]});
         return;
     }
 
@@ -63,12 +62,10 @@ client.on('messageCreate', message => {
         if (base === 'ping') {
             ping.command(message, client.ws.ping);
         } else if (base === 'status') {
-            
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Status')
             .setDescription(`
-            current bot version: ${config.version}
-            Server physical location: US West Coast
+            Current bot version: ${config.version}
 
             **[Support Server](https://discord.gg/9MHJppvmma)**
             `);
@@ -100,8 +97,6 @@ if (config.mode === 'test') {
 } else if (config.mode === 'production') {
     console.log('');
     client.login(tokenfile.production_token);
-}
-else {
-    console.log('[WARNING] invalid bot mode specified, defaulting test mode')
-    client.login(tokenfile.test_token)
+} else {
+    throw new Error('invalid mode specified in config.json');
 }
