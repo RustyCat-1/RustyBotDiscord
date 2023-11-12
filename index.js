@@ -9,6 +9,8 @@ const whyBlacklist = require('./commands/whyBlacklist.js');
 const help = require('./commands/help.js');
 const configs = require('./configs.js')
 
+const changelog = fs.readFileSync('changelog.txt')
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -97,6 +99,10 @@ client.on('messageCreate', message => {
         //     }
         } else if (base === 'whyBlacklist') {
             whyBlacklist.info(message);
+        } else if (base === 'changelog') {
+            const embuilder = new EmbedBuilder()
+            .setDescription(changelog);
+            message.channel.send({ embeds: [ embuilder ] });
         }
     }
 });

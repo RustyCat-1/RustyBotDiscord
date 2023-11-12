@@ -1,5 +1,5 @@
-v0.4.0 Pre-Release 1: 
+v0.4.0 pre-release 1: 
 r.config in development and currently disabled.
-fixed some other things.
+changelog command added 
 
 Rewordings, bugfixes, enhancements.
