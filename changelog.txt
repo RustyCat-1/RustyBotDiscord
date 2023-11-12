@@ -1,4 +1,5 @@
-v0.3.2 changes:
-Made invalid config.mode throw an error.
+v0.4.0 Pre-Release 1: 
+r.config in development and currently disabled.
+fixed some other things.
 
 Rewordings, bugfixes, enhancements.
