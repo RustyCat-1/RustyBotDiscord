@@ -4,3 +4,4 @@ config/
 .*.swp
 node_modules
 token.json
+tests/
