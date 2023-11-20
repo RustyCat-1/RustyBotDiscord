@@ -86,17 +86,23 @@ client.on('messageCreate', message => {
             **Join our support server**: [here](https://discord.gg/9MHJppvmma)
             `);
             message.channel.send({ embeds: [ embuilder ] });
-        // } else if (base === 'config') {
-        //     if (argc == 0)
-        //         message.channel.send('Please provide a key to get/set.\nThe syntax is as follows: \`r.config <key> (get|set) [value to set]\`')
-        //     else if (argc == 1) {
-        //     const embuilder = new EmbedBuilder()
-        //     .setTitle(`Value of key \`${argv[0]}\``)
-        //     .setDescription(`
-        //     \`${argv[0]}\` is set to \`${configs.getServerConfigProperty(argv[0])}\`.
-        //     `);
-        //     message.channel.send({ embeds: [ embuilder ] });
-        //     }
+        } else if (base === 'config') {
+            if (argc == 0)
+                message.channel.send('Please provide a key to get/set.\nThe syntax is as follows: \`r.config <key> (get|set) [value to set]\`')
+            else if (argc == 1) {
+                let embuilder;
+                try{
+                embuilder = new EmbedBuilder()
+                .setTitle(`Value of key \`${argv[0]}\``)
+                .setDescription(`
+                STILL IN BETA! REPORT ANY BUGS IMMEDIATELY!
+                \`${argv[0]}\` is set to \`${configs.getServerConfigProperty(argv[0])}\`.
+                `);
+                } catch (TypeError) {
+                    embuilder = new EmbedBuilder().setTitle('an error occurred. we are working on fixing this')
+                }
+                message.channel.send({ embeds: [ embuilder ] });
+            }
         } else if (base === 'whyBlacklist') {
             whyBlacklist.info(message);
         } else if (base === 'changelog') {

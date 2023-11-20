@@ -1,9 +1,9 @@
 class Node {
     constructor(key, value, prev = null, next = null, timestamp = null) {
-        if(timestamp === undefined)
-            this.timestamp = Date.now();
-        else if (timestamp !== null)
-            this.timestamp = timestamp;
+        // if(timestamp === undefined)
+        //     this.timestamp = Date.now();
+        // else if (timestamp !== null)
+        //     this.timestamp = timestamp;
         this.key = key;
         this.value = value;
         this.prev = prev;
@@ -11,7 +11,14 @@ class Node {
     }
 }
 module.exports = {
+    /**
+     * A class that serves as an Least Recently Used cache.
+     */
     LRU: class {
+        /**
+         * Instaniate an instance of this class.
+         * @param {int} maxSize The maximum size the cache can reach, as a integer.
+         */
         constructor(maxSize) {
             if (maxSize < 1) {
                 throw new RangeError('Maxsize must be greater than 0')
@@ -22,24 +29,51 @@ module.exports = {
             this.head = null;
             this.tail = null;
         }
+        /**
+         * Get an value using a key, refreshing in the process.
+         * @param {*} key The key of the cache-item.
+         * @returns {*} The value that was retrieved from the cache 
+         */
         get(key) {
-            return this.map[key];
-            if(this.head !== null && this.tail !== null) {
+            if(this.size === 1)
+                return this.head.key === key ? this.head.value : null;
+            let node = this._getNode(key);
+            if(node.next === null) {}
+            else if(node.prev === null) {
+                node.next.prev = null;
+                this.head = node.next;
+                this.tail.next = node;
+                node.prev = this.tail;
+                node.next = null;
+                this.tail = node;
+            } 
+            return node === null ? null : node.value;
+        } 
+        /**
+         * This method is not recommended for external use and is designated for internal purposes only. Use {@link get} instead.
+         * @param {*} key The key of the cache-item.
+         * @returns {Node} 
+         */
+        _getNode(key) {
+            // return this.map[key];
+            if (this.head !== null && this.tail !== null) {
                 let i = this.head;
                 while (i !== null) {
-                    if (i === key) {
-                        return i.value;
+                    if (i.key === key) {
+                        return i;
                     }
                     i = i.next;
                 }
+            } else {
+                return this.head.key === key ? this.head : null;
             }
             return null; // not found so we have to get the value; see configs.js
-        } 
+        }
         /**
-         * This method is not recommended for external use.
-         * @param {*} key 
-         * @param {*} value 
-         * @returns {undefined}
+         * This method is not recommended for external use and is designated for internal purposes only. Use {@link put} instead.
+         * @param {*} key The key of the cache-item.
+         * @param {*} value The value of the cache-item.
+         * @returns {undefined} 
          */
         _append(key, value) {
             if (this.head === null && this.tail === null) {
@@ -50,46 +84,40 @@ module.exports = {
             let newnode = new Node(key, value, this.tail);
             this.tail.next = newnode;
             this.tail = newnode;
+            this.size++;
         }
         /**
-         * e
-         * @param {object} key 
-         * @param {object} value 
+         * Add an item to the cache or update value of an existing item
+         * @param {*} key The key of the cache-item.
+         * @param {*} value The value of the cache-item.
          * @returns {undefined}
          */
         put(key, value) {
             if (this.head === null && this.tail === null) {
                 this.head = new Node(key, value);
                 this.tail = this.head;
+                this.size = 1;
                 return;
             } 
-            // let existingNode = null;
             let p = this.head;
             while (p !== null) {
-                if (p.key === key) 
+                if (p.key === key)
                     break;
                 p = p.next
             }
-            let existingNode = p;  
+            let existingNode = p;
             if (existingNode !== undefined && existingNode !== null) {
-                existingNode.value = value;
+                this._getNode(key).value = value;
             } else {
-                existingNode = new Node(key, value, this.tail, null);
-                this.tail.next = existingNode;
-                this.tail = existingNode;
-                // if (this.head === this.tail){
-                //     this.head.next = existingNode
-                //     this.tail = existingNode
-                // } else {
-                //     this.tail.next = existingNode;
-                //     this.tail = existingNode;
-                //     // existingNode.prev = this.tail
-                // }
-                this.size += 1
+                this._append(key, value);
             }
             this.map[key] = value;
             this.reduceSize();
         }
+        /**
+         * Remove an item from the cache.
+         * @param {*} key The key of the cache-item.
+         */
         remove(key) {
             let i = this.head;
             while (i !== null) {
@@ -98,7 +126,6 @@ module.exports = {
                         this.head = i.next;
                         break;
                     }
-                    
                     i.prev.next = i.next;
                     this.size -= 1;
                     break;
@@ -109,12 +136,10 @@ module.exports = {
         }
         reduceSize(size=this.maxSize){
             if (size < 0) { // imagine negative size
-                throw new RangeError('Size must be more than zero')
+                throw new RangeError('Size must be <0')
             }
             else if (size == 0) { // we just delete the linked list haha L
-                this.head = null;
-                this.tail = null;
-                return;
+                this._deleteAll();
             } 
             else if (this.size == 0) { // negative size?!?!!
                 return;
@@ -131,19 +156,12 @@ module.exports = {
                 this.size -= 1;
             }
         }
+        _deleteAll() {
+            this.head = null;
+            this.tail = null;
+            this.size = 0;
+            this.map = {};
+            return;
+        }
     },
-    // WriteCache: class {
-    //     head=new Node(undefined,'head', tiemstamp=null);
-    //     tail=new Node(undefined, 'tail', timestamp=null);
-    //     constructor(){
-
-    //     }
-    //     write(f,d){
-    //         p=this.tail.prev;
-    //         pn=new Node();
-    //         p.next=pn
-    //         this.tail.prev=pn
-    //     }
-
-    // }
 }
