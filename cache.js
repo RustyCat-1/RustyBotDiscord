@@ -38,7 +38,7 @@ module.exports = {
             if(this.size === 1)
                 return this.head.key === key ? this.head.value : null;
             let node = this._getNode(key);
-            if(node.next === null) {}
+            if (node.next === null) {}
             else if(node.prev === null) {
                 node.next.prev = null;
                 this.head = node.next;
@@ -46,13 +46,22 @@ module.exports = {
                 node.prev = this.tail;
                 node.next = null;
                 this.tail = node;
-            } 
+            } else {
+                let pp = node.prev;
+                let n = node.next;
+                pp.next = n
+                n.prev = pp;
+                this.tail.next = node;
+                node.prev = this.tail;
+                this.tail = node;
+                node.next = null;
+            }
             return node === null ? null : node.value;
         } 
         /**
          * This method is not recommended for external use and is designated for internal purposes only. Use {@link get} instead.
          * @param {*} key The key of the cache-item.
-         * @returns {Node} 
+         * @returns {Node} The node with the key {@param key}.
          */
         _getNode(key) {
             // return this.map[key];

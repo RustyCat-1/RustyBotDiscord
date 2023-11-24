@@ -25,15 +25,15 @@ const userBlacklist = fs.readFileSync('./config/blacklist/server.txt', 'utf8');
 client.on('ready', () => {
     console.log('Bot ready!')
     client.user.setStatus('available')
-    if (configFile.mode === 'production')
+    if (tokenFile.mode === 'production')
         client.user.setActivity(
             'r.help | https://discord.gg/9MHJppvmma',
             { type: ActivityType.Playing }
         );
-    else if (configFile.mode === 'test')
+    else if (tokenFile.mode === 'test')
         client.user.setActivity(
-            'RustyBot is running in Test Mode. Please report any bugs you find to `rustybust`.',
-            { type: ActivityType.Playing }
+            'this instance of RustyBot in Test Mode. Please report any bugs you find!',
+            { type: ActivityType.Watching }
         );
 });
 
@@ -113,10 +113,10 @@ client.on('messageCreate', message => {
     }
 });
 
-if (configFile.mode === 'test') {
+if (tokenFile.mode === 'test') {
     console.log('Logging in using test mode...');
     client.login(tokenFile.test_token);
-} else if (configFile.mode === 'production') {
+} else if (tokenFile.mode === 'production') {
     console.log('');
     client.login(tokenFile.production_token);
 } else {
