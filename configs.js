@@ -11,15 +11,15 @@ module.exports = {
     /**
      * 
      * @param {string} id The numerical ID of the guild, in a string
-     * @returns {object}
+     * @returns {boolean} Whether the ID is valid
      */
     validate: (id) => {
-        valid_id.test(id);
+        return valid_id.test(id);
     },
     /**
      * 
      * @param {string} id The numerical ID of the guild, in a string
-     * @returns {object} The configuration of the server, as a copy.
+     * @returns {object} The configuration object of the guild, as a copy
      */
     getServerConfig: function (id) {
         cache_value = lru_cache.get(id)
@@ -43,17 +43,30 @@ module.exports = {
     /**
      * 
      * @param {string} id The numerical ID of the guild, in a string 
-     * @param {string} key The key of the config item to get
+     * @param {string} key The key of the configuration item to get
      * @returns {object}
      */
     getServerConfigProperty: function (id, key) {
         return this.getServerConfig(id)[key]
     },
+    /**
+     * 
+     * @param {string} id The numerical ID of the guild, in a string
+     * @param {object} obj The configuration object of the guild
+     */
     setServerConfig: function(id, obj) {
         fs.writeFile('./config/server/'+id,JSON.stringify(obj))
         lru_cache.put(id, obj)
     },
+    /**
+     * 
+     * @param {string} id The numerical ID of the guild, in a string
+     * @param {string} key The key of the configuration item to set
+     * @param {*} value The value to set the configuration item to
+     */
     setServerConfigProperty: function (id, key, value) {
-        c = this.getServerConfig(id)
+        obj = this.getServerConfig(id)
+        obj['key'] = value
+        return this.setServerConfig(id, obj)
     }
 };
