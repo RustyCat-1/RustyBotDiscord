@@ -40,10 +40,10 @@ client.on('ready', () => {
 client.on('messageCreate', message => {
     if (message.author.bot) return;
     if (serverBlacklist.includes(message.guildId + '\n') | 
-        userBlacklist.includes(message.author.id + '\n')) {
+        userBlacklist.includes(message.author.id + '\n')) { // blacklist
         return;
     }
-    if (message.content === `<@${client.user.id}>`) {
+    if (message.mentions.users.first().id === client.user.id) {
         var emBuilder = new EmbedBuilder()
         .setTitle('Hi, welcome to RustyBot!')
         .setDescription('Type r.help to get started!')
@@ -60,6 +60,7 @@ client.on('messageCreate', message => {
         const base = splits[0];
         const argv = splits.slice(1);
         const argc = argv.length;
+        delete splits;
         if (base === 'ping') {
             ping.command(message, client.ws.ping);
         } else if (base === 'status') {
@@ -86,22 +87,33 @@ client.on('messageCreate', message => {
             **Join our support server**: [here](https://discord.gg/9MHJppvmma)
             `);
             message.channel.send({ embeds: [ embuilder ] });
-        // } else if (base === 'config') {
-        //     if (argc == 0)
-        //         message.channel.send('Please provide a key to get/set.\nThe syntax is as follows: \`r.config <key> (get|set) [value to set]\`')
-        //     else if (argc == 1) {
-        //     const embuilder = new EmbedBuilder()
-        //     .setTitle(`Value of key \`${argv[0]}\``)
-        //     .setDescription(`
-        //     \`${argv[0]}\` is set to \`${configs.getServerConfigProperty(argv[0])}\`.
-        //     `);
-        //     message.channel.send({ embeds: [ embuilder ] });
-        //     }
+        } else if (base === 'config') {
+            const embuilder = new EmbedBuilder()
+            .setTitle('Under development warning')
+            .setDescription(`
+            This command is currently under development. 
+            `);
+
+            message.channel.send({ embeds: [ embuilder ] });
+            // if (argc == 0)
+            //     message.channel.send('Please provide a key to get/set.\nThe syntax is as follows: \`r.config <key> (get|set) [value to set]\`')
+            // else if (argc == 1) {
+            // const embuilder = new EmbedBuilder()
+            // .setTitle(`Value of key \`${argv[0]}\``)
+            // .setDescription(`
+            // \`${argv[0]}\` is set to \`${configs.getServerConfigProperty(argv[0])}\`.
+            // `);
+            // message.channel.send({ embeds: [ embuilder ] });
+            // }
         } else if (base === 'whyBlacklist') {
             whyBlacklist.info(message);
         } else if (base === 'changelog') {
             const embuilder = new EmbedBuilder()
             .setDescription(changelog);
+            message.channel.send({ embeds: [ embuilder ] });
+        } else {
+            const embuilder = new EmbedBuilder()
+            .setDescription(`Command \`${base}\` is not a valid command.`);
             message.channel.send({ embeds: [ embuilder ] });
         }
     }
