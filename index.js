@@ -7,7 +7,7 @@ const configFile = require('./config.json')
 const ping = require('./commands/ping.js');
 const whyBlacklist = require('./commands/whyBlacklist.js');
 const help = require('./commands/help.js');
-const configs = require('./configs.js')
+const dataAccess = require('./dataAccess.js')
 
 const changelog = fs.readFileSync('changelog.txt')
 
@@ -19,8 +19,8 @@ const client = new Client({
     ]
 });
 
-const serverBlacklist = fs.readFileSync('./config/blacklist/server.txt', 'utf8');
-const userBlacklist = fs.readFileSync('./config/blacklist/server.txt', 'utf8');
+const serverBlacklist = require('./data/blacklist/server.json');
+const userBlacklist = require('./data/blacklist/user.json');
 
 client.on('ready', () => {
     console.log('Bot ready!')
@@ -39,17 +39,17 @@ client.on('ready', () => {
 
 client.on('messageCreate', message => {
     if (message.author.bot) return;
-    if (serverBlacklist.includes(message.guildId + '\n') | 
-        userBlacklist.includes(message.author.id + '\n')) {
+    if (message.guildId in serverBlacklist | 
+        message.author.id in userBlacklist) {
         return;
     }
     if (message.content === `<@${client.user.id}>`) {
         var emBuilder = new EmbedBuilder()
         .setTitle('Hi, welcome to RustyBot!')
         .setDescription('Type r.help to get started!')
-    message.channel.send({
+    message.channel.send({ 
             'content': `If you can\'t see anything below this message, you need to turn go to \`Settings\` -> \`Text & Images\` and enable \`Embeds and Link Previews\`.`,
-            'embeds': [emBuilder]});
+            'embeds': [ emBuilder ] });
         return;
     }
 
@@ -88,21 +88,39 @@ client.on('messageCreate', message => {
             message.channel.send({ embeds: [ embuilder ] });
         } else if (base === 'config') {
             if (argc == 0)
-                message.channel.send('Please provide a key to get/set.\nThe syntax is as follows: \`r.config <key> (get|set) [value to set]\`')
+                message.channel.send('Syntax is as follows:\n \`r.config (user|guild|channel) <key> [value]\`')
             else if (argc == 1) {
+                let mode = argv[0];
+                console.log(argv)
+                let embuilder = new EmbedBuilder();
+                switch(mode) {
+                    case 'guild':
+                        embuilder = embuilder
+                            .setTitle(`Configuration for guild \`${message.guildId}\``)
+                            .setDescription(`\`\`\`${JSON.stringify(dataAccess.getGuildData(message.guildId))}\`\`\``);
+                        message.channel.send({ embeds: [ embuilder ] });
+                        break;
+                        
+                }
+            }
+            else if (argc == 2) {
+                if(argv[0] === 'guild' && argv[1] === 'reload') {
+                    dataAccess.reloadGuildData(message.guildId);
+                    message.channel.send(`Data for guild ${message.guildId} has been reloaded!`)
+                    return;
+                }
                 let embuilder;
-                try{
-                embuilder = new EmbedBuilder()
-                .setTitle(`Value of key \`${argv[0]}\``)
-                .setDescription(`
-                STILL IN BETA! REPORT ANY BUGS IMMEDIATELY!
-                \`${argv[0]}\` is set to \`${configs.getServerConfigProperty(argv[0])}\`.
-                `);
+                try {
+                    embuilder = new EmbedBuilder()
+                    .setTitle(`Value of key \`${argv[1]}\``)
+                    .setDescription(`
+                    \`\`\`${dataAccess.getGuildDataProperty(argv[1])}\`\`\`.
+                    `);
                 } catch (TypeError) {
-                    embuilder = new EmbedBuilder().setTitle('an error occurred. we are working on fixing this')
+                    embuilder = new EmbedBuilder().setTitle('An error occurred. Please try again.')
                 }
                 message.channel.send({ embeds: [ embuilder ] });
-            }
+                }
         } else if (base === 'whyBlacklist') {
             whyBlacklist.info(message);
         } else if (base === 'changelog') {

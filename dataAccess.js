@@ -1,11 +1,8 @@
 const fs = require('node:fs');
 
 const valid_id = /^[0-9]+$/;
-const maxCacheArrayLength = 1024;
 
-const cache = require('./cache.js');
-
-const lru_cache = new cache.LRU(maxCacheArrayLength);
+const guildData = {};
 
 module.exports = {
     /**
@@ -19,25 +16,20 @@ module.exports = {
     /**
      * 
      * @param {string} id The numerical ID of the guild, in a string
-     * @returns {object} The configuration object of the guild, as a copy
+     * @returns {object} The configuration object of the guild
      */
-    getServerConfig: function (id) {
-        cache_value = lru_cache.get(id)
-        if (cache_value === null) {
+    getGuildData: function (id) {
+        if (!(id in guildData)) {
             let raw;
             try {
-                raw = fs.readFileSync('./config/server/' + id + '.json')
+                raw = fs.readFileSync('./data/guild/' + id + '.json')
             } catch (err) {
-                raw = 'file could not be read'
+                console.log(err)
+                return undefined
             }
-            let data;
-            if (raw !== 'file could not be read') {
-                data = JSON.parse(raw);
-            } else {
-                data = raw;
-            }
-            lru_cache.put(id, data)
-            return data;
+            return JSON.parse(raw);
+        } else {
+            return guildData[id]
         }
     },
     /**
@@ -46,17 +38,18 @@ module.exports = {
      * @param {string} key The key of the configuration item to get
      * @returns {object}
      */
-    getServerConfigProperty: function (id, key) {
-        return this.getServerConfig(id)[key]
+    getGuildDataProperty: function (id, key) {
+        obj = this.getGuildData(id)
+        return obj === undefined ? undefined : (key in obj ? obj[key] : undefined)
     },
     /**
      * 
      * @param {string} id The numerical ID of the guild, in a string
      * @param {object} obj The configuration object of the guild
      */
-    setServerConfig: function(id, obj) {
-        fs.writeFile('./config/server/'+id,JSON.stringify(obj))
-        lru_cache.put(id, obj)
+    setGuildConfig: function(id, obj) {
+        guildData[id] = obj
+        fs.writeFile('./data/guild/'+id, JSON.stringify(obj))
     },
     /**
      * 
@@ -64,9 +57,16 @@ module.exports = {
      * @param {string} key The key of the configuration item to set
      * @param {*} value The value to set the configuration item to
      */
-    setServerConfigProperty: function (id, key, value) {
-        obj = this.getServerConfig(id)
+    setGuildDataProperty: function (id, key, value) {
+        obj = this.getGuildData(id)
         obj['key'] = value
-        return this.setServerConfig(id, obj)
+        return this.setGuildConfig(id, obj)
+    },
+    reloadGuildData: function(id) {
+        try {
+            guildData[id] = JSON.parse(fs.readFileSync('./data/guild/' + id + '.json'))
+        } catch (err) {
+            // pass
+        }
     }
 };
