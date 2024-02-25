@@ -105,7 +105,7 @@ client.on('messageCreate', message => {
             }
             else if (argc == 2) {
                 if(argv[0] === 'guild' && argv[1] === 'reload') {
-                    dataAccess.reloadGuildData(message.guildId);
+                    dataAccess.guild.reloadData(message.guildId);
                     message.channel.send(`Data for guild ${message.guildId} has been reloaded!`)
                     return;
                 }
@@ -114,7 +114,7 @@ client.on('messageCreate', message => {
                     embuilder = new EmbedBuilder()
                     .setTitle(`Value of key \`${argv[1]}\``)
                     .setDescription(`
-                    \`\`\`${dataAccess.getGuildDataProperty(argv[1])}\`\`\`.
+                    \`\`\`${dataAccess.guild.getDataProperty(argv[1])}\`\`\`.
                     `);
                 } catch (TypeError) {
                     embuilder = new EmbedBuilder().setTitle('An error occurred. Please try again.')
