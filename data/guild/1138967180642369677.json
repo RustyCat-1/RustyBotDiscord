@@ -1,7 +1,7 @@
 {
     "foo": "bar",
     "config": {
-        "prefix": "r-",
+        "prefix": "r.",
         "welcome_channel": ""
     }
 }
