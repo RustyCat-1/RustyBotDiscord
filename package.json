@@ -1,13 +1,16 @@
 {
   "name": "discord_bot",
-  "version": "1.0.0",
-  "description": "",
+  "version": "beta",
+  "description": "Multipurpose Discord bot",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "pm2 start discord_bot",
+    "stop": "pm2 stop discord_bot",
+    "restart": "pm2 restart discord_bot",
+    "test": "node.js discord_bot test"
   },
   "keywords": [],
-  "author": "",
+  "author": "Rusty",
   "license": "ISC",
   "dependencies": {
     "dedent-js": "^1.0.1",

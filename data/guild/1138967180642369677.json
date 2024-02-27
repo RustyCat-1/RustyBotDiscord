@@ -1,1 +1,7 @@
-{}
+{
+    "foo": "bar",
+    "config": {
+        "prefix": "r-",
+        "welcome_channel": ""
+    }
+}

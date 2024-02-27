@@ -4,6 +4,36 @@ const valid_id = /^[0-9]+$/;
 
 const guildData = {};
 
+class DataObject { // abstract
+    constructor(data = undefined) {
+        this.data = (data === undefined ? {} : data)
+    }
+    getData(){}
+    getDataProperty(){}
+    setData(){}
+    setDataProperty(){}
+}
+
+/**
+ * A framework to read/write JSON files. This one is going to represent the whole
+ */
+class FileDataObject extends DataObject {
+    constructor(path, data = undefined, cache_obj = undefined) {
+        if (path === undefined) {
+            throw new TypeError('`path` must be of type String')
+        }
+        this.path = path;
+        super(data)
+    }
+}
+class SubDataObject extends DataObject {
+    constructor(parent, data = undefined) {
+        if ((typeof parent) !== DataObject)
+            throw new TypeError('`parent` must be a DataObject')
+        this.parent = parent;
+    }
+}
+
 module.exports = {
     /**
      * 
@@ -41,7 +71,20 @@ module.exports = {
          */
         getDataProperty: function (id, key) {
             obj = this.getData(id)
-            return obj === undefined ? undefined : (key in obj ? obj[key] : undefined)
+            // return obj === undefined ? undefined : (key in obj ? obj[key] : undefined)
+            if (obj === undefined) {
+                return undefined;
+            } else {
+                if (key in obj) {
+                    return obj[key];
+                } else {
+                    if (id === 'default') {
+                        return undefined;
+                    } else {
+                        return this.getDataProperty('default', key);
+                    }
+                }
+            }
         },
         /**
          * 
@@ -60,8 +103,8 @@ module.exports = {
          */
         setDataProperty: function (id, key, value) {
             obj = this.getData(id)
-            obj['key'] = value
-            return this.setData(id, obj)
+            obj[key] = value
+            fs.writeFile('./data/guild/'+id, JSON.stringify(obj, null, 2))
         },
         reloadData: function(id) {
             try {

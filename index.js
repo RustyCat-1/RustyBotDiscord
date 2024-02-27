@@ -19,8 +19,9 @@ const client = new Client({
     ]
 });
 
-const serverBlacklist = require('./data/blacklist/server.json');
-const userBlacklist = require('./data/blacklist/user.json');
+const blacklist = require('./data/blacklist.json');
+const perms = require('./data/perms.json')
+
 
 client.on('ready', () => {
     console.log('Bot ready!')
@@ -32,15 +33,15 @@ client.on('ready', () => {
         );
     else if (tokenFile.mode === 'test')
         client.user.setActivity(
-            'this instance of RustyBot in Test Mode. Please report any bugs you find!',
+            'RustyBot in Test Mode. Please report any bugs you find!',
             { type: ActivityType.Watching }
         );
 });
 
 client.on('messageCreate', message => {
     if (message.author.bot) return;
-    if (message.guildId in serverBlacklist | 
-        message.author.id in userBlacklist) {
+    if (message.guildId in blacklist.guilds ||
+        message.author.id in blacklist.users) {
         return;
     }
     if (message.content === `<@${client.user.id}>`) {
@@ -53,14 +54,19 @@ client.on('messageCreate', message => {
         return;
     }
 
-    const prefix = configFile.prefix;
+    const prefix = dataAccess.guild.getDataProperty(message.guildId, 'config').prefix || `<@${client.user.id}>`;
+    
     if (message.content.startsWith(prefix)) {
         const command = message.content.slice(prefix.length);
         const splits = command.split(' ');
         const base = splits[0];
         const argv = splits.slice(1);
         const argc = argv.length;
-        if (base === 'ping') {
+        if (base == 'admin') {
+            if (message.user.id in perms.admin) {
+                // do something
+            }
+        } else if (base === 'ping') {
             ping.command(message, client.ws.ping);
         } else if (base === 'status') {
             const embuilder = new EmbedBuilder()
@@ -91,22 +97,23 @@ client.on('messageCreate', message => {
                 message.channel.send('Syntax is as follows:\n \`r.config (user|guild|channel) <key> [value]\`')
             else if (argc == 1) {
                 let mode = argv[0];
-                console.log(argv)
                 let embuilder = new EmbedBuilder();
                 switch(mode) {
+                    case 'user', 'channel':
+                        message.channel.send('This feature has not been implemented yet or is not available to you at the moment.')
+                        break;
                     case 'guild':
                         embuilder = embuilder
                             .setTitle(`Configuration for guild \`${message.guildId}\``)
-                            .setDescription(`\`\`\`${JSON.stringify(dataAccess.getGuildData(message.guildId))}\`\`\``);
+                            .setDescription('\`\`\`json\n'+JSON.stringify(dataAccess.guild.getData(message.guildId), null, 1) + '\`\`\`');
                         message.channel.send({ embeds: [ embuilder ] });
                         break;
-                        
                 }
             }
             else if (argc == 2) {
                 if(argv[0] === 'guild' && argv[1] === 'reload') {
                     dataAccess.guild.reloadData(message.guildId);
-                    message.channel.send(`Data for guild ${message.guildId} has been reloaded!`)
+                    message.channel.send(`Data for server ${message.guildId} has been reloaded!`)
                     return;
                 }
                 let embuilder;
@@ -114,7 +121,7 @@ client.on('messageCreate', message => {
                     embuilder = new EmbedBuilder()
                     .setTitle(`Value of key \`${argv[1]}\``)
                     .setDescription(`
-                    \`\`\`${dataAccess.guild.getDataProperty(argv[1])}\`\`\`.
+                    \`\`\`${dataAccess.guild.getDataProperty(argv[1])}\`\`\`
                     `);
                 } catch (TypeError) {
                     embuilder = new EmbedBuilder().setTitle('An error occurred. Please try again.')
@@ -131,12 +138,10 @@ client.on('messageCreate', message => {
     }
 });
 
-if (tokenFile.mode === 'test') {
+if (process.argv.length > 2) {
     console.log('Logging in using test mode...');
     client.login(tokenFile.test_token);
-} else if (tokenFile.mode === 'production') {
-    console.log('');
-    client.login(tokenFile.production_token);
 } else {
-    throw new Error('invalid mode specified in config.json');
-}
+    console.log('Logging in...');
+    client.login(tokenFile.production_token);
+} 
