@@ -1,7 +1,6 @@
 .env
-config/
 .DS_Store
 .*.swp
 node_modules
 token.json
-tests/
+.vscode
