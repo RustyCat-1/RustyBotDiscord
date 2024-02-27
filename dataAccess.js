@@ -4,7 +4,35 @@ const valid_id = /^[0-9]+$/;
 
 const guildData = {};
 
-class DataObject { // abstract
+
+/**
+ * A framework to read/write JSON files. This one is going to represent the whole
+ */
+class FileManager {
+    constructor(base, suffix) {
+        if ((typeof base !== String) || (typeof suffix !== String)) {
+            throw new TypeError('`base` and `suffix` must be of type String');
+        }
+        this.base = base;
+        this.suffix = suffix;
+        this.cache = {}; // potentially dangerous because it increasingly uses memory, but shouldn't be a problem for small implementations
+    }
+    get(id) {
+        if (id in this.cache) {
+            return this.cache[id]
+        } else {
+            let raw;
+            try {
+                raw = fs.readFileSync(this.base + id + this.suffix)
+            } catch (err) {
+                console.log(err)
+                return undefined;
+            }
+            return JSON.parse(raw);
+        }
+    }
+}
+class DataObject { 
     constructor(data = undefined) {
         this.data = (data === undefined ? {} : data)
     }
@@ -14,25 +42,6 @@ class DataObject { // abstract
     setDataProperty(){}
 }
 
-/**
- * A framework to read/write JSON files. This one is going to represent the whole
- */
-class FileDataObject extends DataObject {
-    constructor(path, data = undefined, cache_obj = undefined) {
-        if (path === undefined) {
-            throw new TypeError('`path` must be of type String')
-        }
-        this.path = path;
-        super(data)
-    }
-}
-class SubDataObject extends DataObject {
-    constructor(parent, data = undefined) {
-        if ((typeof parent) !== DataObject)
-            throw new TypeError('`parent` must be a DataObject')
-        this.parent = parent;
-    }
-}
 
 module.exports = {
     /**
@@ -55,8 +64,8 @@ module.exports = {
                 try {
                     raw = fs.readFileSync('./data/guild/' + id + '.json')
                 } catch (err) {
-                    console.log(err)
-                    return undefined
+                    console.log(err);
+                    return undefined;
                 }
                 return JSON.parse(raw);
             } else {
