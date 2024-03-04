@@ -15,7 +15,8 @@ const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMembers
     ]
 });
 
@@ -53,8 +54,9 @@ client.on('messageCreate', message => {
             'embeds': [ emBuilder ] });
         return;
     }
-
-    const prefix = dataAccess.guild.getDataProperty(message.guildId, 'config').prefix || `<@${client.user.id}>`;
+    //  console.log(message.guildId); // TEST
+    // console.log(dataAccess.guild.get(message.guildId))
+    const prefix = dataAccess.guild.get(message.guildId).get('config.prefix') || `<@${client.user.id}> `;
     
     if (message.content.startsWith(prefix)) {
         const command = message.content.slice(prefix.length);
@@ -103,17 +105,17 @@ client.on('messageCreate', message => {
                         message.channel.send('This feature has not been implemented yet or is not available to you at the moment.')
                         break;
                     case 'guild':
-                        embuilder = embuilder
-                            .setTitle(`Configuration for guild \`${message.guildId}\``)
-                            .setDescription('\`\`\`json\n'+JSON.stringify(dataAccess.guild.getData(message.guildId), null, 1) + '\`\`\`');
+                        embuilder = new EmbedBuilder()
+                            .setTitle(`Configuration for server \`${message.guildId}\``)
+                            .setDescription(`\`\`\`json\n${dataAccess.guild.get(message.guildId).toJSON()}\`\`\``);
                         message.channel.send({ embeds: [ embuilder ] });
                         break;
                 }
             }
             else if (argc == 2) {
                 if(argv[0] === 'guild' && argv[1] === 'reload') {
-                    dataAccess.guild.reloadData(message.guildId);
-                    message.channel.send(`Data for server ${message.guildId} has been reloaded!`)
+                    dataAccess.guild.reload(message.guildId);
+                    message.channel.send(`Data for server \`${message.guildId}\` has been reloaded!`)
                     return;
                 }
                 let embuilder;
@@ -121,7 +123,7 @@ client.on('messageCreate', message => {
                     embuilder = new EmbedBuilder()
                     .setTitle(`Value of key \`${argv[1]}\``)
                     .setDescription(`
-                    \`\`\`${dataAccess.guild.getDataProperty(argv[1])}\`\`\`
+                    \`\`\`${JSON.stringify(dataAccess.guild.get(message.guildId).get(argv[1]))}\`\`\`
                     `);
                 } catch (TypeError) {
                     embuilder = new EmbedBuilder().setTitle('An error occurred. Please try again.')
@@ -137,6 +139,18 @@ client.on('messageCreate', message => {
         }
     }
 });
+
+client.on('guildMemberAdd', (member) => {
+    try {
+        let wel_chan = dataAccess.get(member.guildId).get('config.welcome_channel');
+        if (wel_chan !== null) {
+            let c = member.guild.channels.cache.get(wel_chan);
+            c.send(`Welcome ${member.user.tag}`)
+        }
+    } catch (e) {
+        // do nothing lol
+    }
+})
 
 if (process.argv.length > 2) {
     console.log('Logging in using test mode...');
