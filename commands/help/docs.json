@@ -3,12 +3,17 @@
         "description": "Tests the round-trip and API latency of the bot."
     }, 
     "help": {
-        "description": "Gets help on a command or the bot."
+        "description": "Gets help on a command or the bot.",
+        "syntax": "help [command]"
     },
     "status": {
         "description": "Makes sure the bot is online."
     },
     "invite": {
-        "description": "Returns the invite links for the bot, and other things."
+        "description": "Returns the invite links for the bot."
+    },
+    "config": {
+        "description": "Gets a configuration value.",
+        "syntax": "r.config (user|guild|channel) <key> [value]"
     }
 }

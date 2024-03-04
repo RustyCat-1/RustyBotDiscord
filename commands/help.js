@@ -9,7 +9,8 @@ module.exports = {
         commandsList = `ping
 status
 help
-invite`
+invite
+config`
         const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Help')
             .setDescription(`

@@ -1,0 +1,10 @@
+{
+    "config": {
+        "prefix": "r.",
+        "modules": {
+            "welcome": {
+                "welcome_channel": ""
+            }
+        }
+    }
+}

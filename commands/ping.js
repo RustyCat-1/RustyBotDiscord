@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 
 module.exports = {
-    command: function(recievedMessage, ping) {
+    command: function(recievedMessage, clientPing) {
         const emBuilder = new Discord.EmbedBuilder()
         .setTitle('RustyBot Latency Test')
         .setDescription(`
@@ -12,7 +12,7 @@ Calculating latency...`)
             .setTitle('RustyBot Latency Test')
             .setDescription(`
             Latency: \`${message.createdTimestamp - recievedMessage.createdTimestamp}ms\`
-            Average API Latency: \`${ping}ms\`
+            Average API Latency: \`${clientPing}ms\`
             `)
             .setTimestamp();
             message.edit({ "embeds": [ emBuilder ] });
