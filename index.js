@@ -34,25 +34,15 @@ client.on('ready', () => {
         );
     else if (configFile.mode === 'test')
         client.user.setActivity(
-<<<<<<< HEAD
-            'RustyBot is running in Test Mode. Please report any bugs you find to `rustybust`.',
-            { type: ActivityType.Playing }
-=======
             'RustyBot in Test Mode. Please report any bugs you find!',
             { type: ActivityType.Watching }
->>>>>>> development
         );
 });
 
 client.on('messageCreate', message => {
     if (message.author.bot) return;
-<<<<<<< HEAD
-    if (serverBlacklist.includes(message.guildId + '\n') | 
-        userBlacklist.includes(message.author.id + '\n')) { // blacklist
-=======
     if (message.guildId in blacklist.guilds ||
         message.author.id in blacklist.users) {
->>>>>>> development
         return;
     }
     if (message.mentions.users.first().id === client.user.id) {
@@ -74,16 +64,11 @@ client.on('messageCreate', message => {
         const base = splits[0];
         const argv = splits.slice(1);
         const argc = argv.length;
-<<<<<<< HEAD
-        delete splits;
-        if (base === 'ping') {
-=======
         if (base == 'admin') {
             if (message.user.id in perms.admin) {
                 // do something
             }
         } else if (base === 'ping') {
->>>>>>> development
             ping.command(message, client.ws.ping);
         } else if (base === 'status') {
             const embuilder = new EmbedBuilder()
@@ -110,25 +95,6 @@ client.on('messageCreate', message => {
             `);
             message.channel.send({ embeds: [ embuilder ] });
         } else if (base === 'config') {
-<<<<<<< HEAD
-            const embuilder = new EmbedBuilder()
-            .setTitle('Under development warning')
-            .setDescription(`
-            This command is currently under development. 
-            `);
-
-            message.channel.send({ embeds: [ embuilder ] });
-            // if (argc == 0)
-            //     message.channel.send('Please provide a key to get/set.\nThe syntax is as follows: \`r.config <key> (get|set) [value to set]\`')
-            // else if (argc == 1) {
-            // const embuilder = new EmbedBuilder()
-            // .setTitle(`Value of key \`${argv[0]}\``)
-            // .setDescription(`
-            // \`${argv[0]}\` is set to \`${configs.getServerConfigProperty(argv[0])}\`.
-            // `);
-            // message.channel.send({ embeds: [ embuilder ] });
-            // }
-=======
             if (argc == 0)
                 message.channel.send('Syntax is as follows:\n \`r.config (user|guild|channel) <key> [value]\`')
             else if (argc == 1) {
@@ -164,7 +130,6 @@ client.on('messageCreate', message => {
                 }
                 message.channel.send({ embeds: [ embuilder ] });
                 }
->>>>>>> development
         } else if (base === 'whyBlacklist') {
             whyBlacklist.info(message);
         } else if (base === 'changelog') {
@@ -179,14 +144,6 @@ client.on('messageCreate', message => {
     }
 });
 
-<<<<<<< HEAD
-if (configFile.mode === 'test') {
-    console.log('Logging in using test mode...');
-    client.login(tokenFile.test_token);
-} else if (configFile.mode === 'production') {
-    console.log('');
-    client.login(tokenFile.production_token);
-=======
 client.on('guildMemberAdd', (member) => {
     try {
         let wel_chan = dataAccess.get(member.guildId).get('config.welcome_channel');
@@ -202,7 +159,6 @@ client.on('guildMemberAdd', (member) => {
 if (process.argv.length > 2) {
     console.log('Logging in using test mode...');
     client.login(tokenFile.test_token);
->>>>>>> development
 } else {
     console.log('Logging in...');
     client.login(tokenFile.production_token);
