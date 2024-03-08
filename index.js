@@ -45,7 +45,9 @@ client.on('messageCreate', message => {
         message.author.id in blacklist.users) {
         return;
     }
-    if (message.mentions.users.first().id === client.user.id) {
+
+    if ((message.mentions.users.length > 0 && message.mentions.users.first().id === client.user.id) ||
+     message.content === `<@${client.user.id}>` ) {
         var emBuilder = new EmbedBuilder()
         .setTitle('Hi, welcome to RustyBot!')
         .setDescription('Type r.help to get started!')
@@ -54,8 +56,7 @@ client.on('messageCreate', message => {
             'embeds': [ emBuilder ] });
         return;
     }
-    //  console.log(message.guildId); // TEST
-    // console.log(dataAccess.guild.get(message.guildId))
+
     const prefix = dataAccess.guild.get(message.guildId).get('config.prefix') || `<@${client.user.id}> `;
     
     if (message.content.startsWith(prefix)) {
@@ -113,7 +114,7 @@ client.on('messageCreate', message => {
                 }
             }
             else if (argc == 2) {
-                if(argv[0] === 'guild' && argv[1] === 'reload') {
+                if (argv[0] === 'guild' && argv[1] === 'reload') {
                     dataAccess.guild.reload(message.guildId);
                     message.channel.send(`Data for server \`${message.guildId}\` has been reloaded!`)
                     return;
@@ -146,15 +147,22 @@ client.on('messageCreate', message => {
 
 client.on('guildMemberAdd', (member) => {
     try {
-        let wel_chan = dataAccess.get(member.guildId).get('config.welcome_channel');
-        if (wel_chan !== null) {
-            let c = member.guild.channels.cache.get(wel_chan);
-            c.send(`Welcome ${member.user.tag}`)
+        let wel_chan = dataAccess.guild.get(member.guild.id).get('config.welcome_channel');
+        if (wel_chan !== null && wel_chan !== undefined) {
+            // let c = member.guild.channels.cache.find(wel_chan.toString());
+            let c = client.channels.cache.get(wel_chan.toString());
+            if (c === undefined) {
+                console.log('c === undefined')
+            }
+            console.log(c);
+            c.send(`Welcome ${member.user.tag}`);
+        } else {
+            console.log('welchan === null');
         }
     } catch (e) {
-        // do nothing lol
+        
     }
-})
+});
 
 if (process.argv.length > 2) {
     console.log('Logging in using test mode...');
@@ -162,4 +170,4 @@ if (process.argv.length > 2) {
 } else {
     console.log('Logging in...');
     client.login(tokenFile.production_token);
-} 
+}
