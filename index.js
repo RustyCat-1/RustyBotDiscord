@@ -3,20 +3,21 @@ const { Client, GatewayIntentBits, ActivityType, EmbedBuilder } = require('disco
 const fs = require('node:fs');
 
 const tokenFile = require('./token.json');
-const configFile = require('./config.json')
+const configFile = require('./config.json');
+
 const ping = require('./commands/ping.js');
 const whyBlacklist = require('./commands/whyBlacklist.js');
 const help = require('./commands/help.js');
 const dataAccess = require('./dataAccess.js')
 
-const changelog = fs.readFileSync('changelog.txt')
+const changelog = fs.readFileSync('changelog.txt');
 
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMembers
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.MessageContent
     ]
 });
 
@@ -148,6 +149,7 @@ client.on('messageCreate', message => {
 client.on('guildMemberAdd', (member) => {
     try {
         let wel_chan = dataAccess.guild.get(member.guild.id).get('config.welcome_channel');
+        if (wel_chan === 0) return;
         if (wel_chan !== null && wel_chan !== undefined) {
             // let c = member.guild.channels.cache.find(wel_chan.toString());
             let c = client.channels.cache.get(wel_chan.toString());

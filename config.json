@@ -1,5 +1,5 @@
 {
-    "prefix": "r.",
-    "version": "Development",
-    "mode": "test"
+    "version": "development",
+    "mode": "test",
+    "data_path": "../data/"
 }
