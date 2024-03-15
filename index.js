@@ -21,8 +21,8 @@ const client = new Client({
     ]
 });
 
-const blacklist = require('./data/blacklist.json');
-const perms = require('./data/perms.json')
+const blacklist = require('../data/blacklist.json');
+const perms = require('../data/perms.json')
 
 
 client.on('ready', () => {
@@ -59,7 +59,7 @@ client.on('messageCreate', message => {
     }
 
     const prefix = dataAccess.guild.get(message.guildId).get('config.prefix') || `<@${client.user.id}> `;
-    
+
     if (message.content.startsWith(prefix)) {
         const command = message.content.slice(prefix.length);
         const splits = command.split(' ');
@@ -68,7 +68,7 @@ client.on('messageCreate', message => {
         const argc = argv.length;
         if (base == 'admin') {
             if (message.user.id in perms.admin) {
-                // do something
+                // do something idk
             }
         } else if (base === 'ping') {
             ping.command(message, client.ws.ping);
@@ -97,27 +97,31 @@ client.on('messageCreate', message => {
             `);
             message.channel.send({ embeds: [ embuilder ] });
         } else if (base === 'config') {
-            if (argc == 0)
+            if (argc == 0) {
                 message.channel.send('Syntax is as follows:\n \`r.config (user|guild|channel) <key> [value]\`')
+            }
             else if (argc == 1) {
-                let mode = argv[0];
-                let embuilder = new EmbedBuilder();
-                switch(mode) {
-                    case 'user', 'channel':
-                        message.channel.send('This feature has not been implemented yet or is not available to you at the moment.')
-                        break;
-                    case 'guild':
-                        embuilder = new EmbedBuilder()
-                            .setTitle(`Configuration for server \`${message.guildId}\``)
-                            .setDescription(`\`\`\`json\n${dataAccess.guild.get(message.guildId).toJSON()}\`\`\``);
-                        message.channel.send({ embeds: [ embuilder ] });
-                        break;
-                }
+            let mode = argv[0];
+            let embuilder = new EmbedBuilder();
+            switch(mode) {
+                case 'user', 'channel':
+                    message.channel.send('This feature has not been implemented yet or is not available to you at the moment.')
+                    break;
+                case 'guild':
+                    embuilder = new EmbedBuilder()
+                        .setTitle(`Configuration for server \`${message.guildId}\``)
+                        .setDescription(`\`\`\`json\n${dataAccess.guild.get(message.guildId).toJSON()}\`\`\``);
+                    message.channel.send({ embeds: [ embuilder ] });
+                    break;
+            }
             }
             else if (argc == 2) {
                 if (argv[0] === 'guild' && argv[1] === 'reload') {
-                    dataAccess.guild.reload(message.guildId);
-                    message.channel.send(`Data for server \`${message.guildId}\` has been reloaded!`)
+                    dataAccess.guild.reload(message.guildId).then(() => {
+                        message.channel.send(`Data for server \`${message.guildId}\` has successfully been reloaded!`);
+                    }).catch((error) => {
+                        message.channel.send(`An error occurred whilst reloading server data for \`${message.guildId}\`.`)
+                    });
                     return;
                 }
                 let embuilder;
@@ -154,7 +158,7 @@ client.on('guildMemberAdd', (member) => {
             // let c = member.guild.channels.cache.find(wel_chan.toString());
             let c = client.channels.cache.get(wel_chan.toString());
             if (c === undefined) {
-                console.log('c === undefined')
+                console.log('c === undefined');
             }
             console.log(c);
             c.send(`Welcome ${member.user.tag}`);

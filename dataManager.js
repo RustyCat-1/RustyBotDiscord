@@ -80,24 +80,24 @@ class FileManager {
     }
     
     /**
-     * @returns {boolean} true if the operation succeeded; otherwise, false
+     * Reloads the guild data synchronously
      */
-    reload(id) { // note: re-implement using promise/future or async
+    reloadSync(id) { 
         id = this._verify_id(id);
-        try {
-            this.cache[id] = new DataNode(this, this._load(id));
-        } catch (e) {
-            if (e instanceof TypeError) {
-                throw e;
-            }
-            return false;
-        } 
+        this.cache[id] = new DataNode(this, this._load(id));
+    }
+    /**
+     * Reloads the guild data 
+     */
+    async reload(id) {
+        id = await this._verify_id(id);
+        this.cache[id] = await new DataNode(this, this._load(id));
         return true;
     }
-    
+
     set(id, value) {
         if (id === 'default') {
-            throw new RangeError('cannot write to default')
+            throw new RangeError('cannot write to default');
         }
         id = this._verify_id(id);
         data[id] = value;
