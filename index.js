@@ -104,8 +104,11 @@ client.on('messageCreate', message => {
             let mode = argv[0];
             let embuilder = new EmbedBuilder();
             switch(mode) {
-                case 'user', 'channel':
-                    message.channel.send('This feature has not been implemented yet or is not available to you at the moment.')
+                case 'user':
+                    embuilder = new EmbedBuilder()
+                        .setTitle(`Configuration for user \`${message.user.id}\``)
+                        .setDescription(`\`\`\`json\n${dataAccess.user.get(message.user.id).toJSON()}\`\`\``);
+                    message.channel.send({ embeds: [ embuilder ] });
                     break;
                 case 'guild':
                     embuilder = new EmbedBuilder()
@@ -118,7 +121,7 @@ client.on('messageCreate', message => {
             else if (argc == 2) {
                 if (argv[0] === 'guild' && argv[1] === 'reload') {
                     dataAccess.guild.reload(message.guildId).then(() => {
-                        message.channel.send(`Data for server \`${message.guildId}\` has successfully been reloaded!`);
+                        message .channel.send(`Data for server \`${message.guildId}\` has successfully been reloaded!`);
                     }).catch((error) => {
                         message.channel.send(`An error occurred whilst reloading server data for \`${message.guildId}\`.`)
                     });
