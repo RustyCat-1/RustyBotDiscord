@@ -25,8 +25,6 @@ const client = new Client({
 });
 
 const blacklist = require('../data/blacklist.json');
-const perms = require('../data/perms.json')
-
 
 client.on('ready', () => {
     console.log('Bot ready!')
@@ -69,11 +67,7 @@ client.on('messageCreate', message => {
         const base = splits[0];
         const argv = splits.slice(1);
         const argc = argv.length;
-        if (base == 'admin') {
-            if (message.user.id in perms.admin) {
-                // do something idk
-            }
-        } else if (base === 'ping') {
+        if (base === 'ping') {
             ping.command(message, client.ws.ping);
         } else if (base === 'status') {
             const embuilder = new EmbedBuilder()
@@ -126,7 +120,7 @@ client.on('messageCreate', message => {
                     dataAccess.guild.reload(message.guildId).then(() => {
                         message .channel.send(`Data for server \`${message.guildId}\` has successfully been reloaded!`);
                     }).catch((error) => {
-                        message.channel.send(`An error occurred whilst reloading server data for \`${message.guildId}\`.`)
+                        message.channel.send(`An error occurred whilst reloading server data for \`${message.guildId}\`.`);
                     });
                     return;
                 }
@@ -172,7 +166,7 @@ client.on('guildMemberAdd', async (member) => {
 });
 
 client.on('messageReactionAdd', (reaction, user) => {
-    if (user.bot) return
+    if (user.bot) return;
 })
 
 if (process.argv.length > 2) {
