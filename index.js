@@ -17,7 +17,10 @@ const client = new Client({
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.MessageContent
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildMessageReactions,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.DirectMessageReactions
     ]
 });
 
@@ -153,25 +156,24 @@ client.on('messageCreate', message => {
     }
 });
 
-client.on('guildMemberAdd', (member) => {
+client.on('guildMemberAdd', async (member) => {
     try {
         let wel_chan = dataAccess.guild.get(member.guild.id).get('config.welcome_channel');
-        if (wel_chan === 0) return;
-        if (wel_chan !== null && wel_chan !== undefined) {
-            // let c = member.guild.channels.cache.find(wel_chan.toString());
-            let c = client.channels.cache.get(wel_chan.toString());
-            if (c === undefined) {
-                console.log('c === undefined');
-            }
-            console.log(c);
-            c.send(`Welcome ${member.user.tag}`);
-        } else {
-            console.log('welchan === null');
+        console.log(wel_chan)
+        if (!wel_chan) return;
+        let c = await client.channels.fetch(wel_chan.toString());
+        if (c === undefined) {
+            console.log('c === undefined');
         }
+        c.send(`Welcome <@${member.user.id}>!`);
     } catch (e) {
-        
+        console.error(e);
     }
 });
+
+client.on('messageReactionAdd', (reaction, user) => {
+    if (user.bot) return
+})
 
 if (process.argv.length > 2) {
     console.log('Logging in using test mode...');
