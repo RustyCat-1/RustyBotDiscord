@@ -1,5 +1,5 @@
 {
-    "version": "development",
+    "version": "0.4",
     "mode": "test",
     "data_path": "../data/"
 }
