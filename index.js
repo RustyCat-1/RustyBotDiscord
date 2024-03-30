@@ -153,13 +153,9 @@ client.on('messageCreate', message => {
 client.on('guildMemberAdd', async (member) => {
     try {
         let wel_chan = dataAccess.guild.get(member.guild.id).get('config.welcome_channel');
-        console.log(wel_chan)
         if (!wel_chan) return;
         let c = await client.channels.fetch(wel_chan.toString());
-        if (c === undefined) {
-            console.log('c === undefined');
-        }
-        c.send(`Welcome <@${member.user.id}>!`);
+        c.send(`Welcome <@${member.user.id}> to <@${member.guild.name}>!`);
     } catch (e) {
         console.error(e);
     }

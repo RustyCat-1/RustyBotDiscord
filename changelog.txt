@@ -1,5 +1,0 @@
-CONFIG COMMAND DEVELOPMENT BRANCH: 
-r.config in development and currently unstable.
-There are still some issues but I'm working on it.
-
-Rewordings, bugfixes, enhancements, etc.
