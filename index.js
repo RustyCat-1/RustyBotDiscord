@@ -10,7 +10,7 @@ const whyBlacklist = require('./commands/whyBlacklist.js');
 const help = require('./commands/help.js');
 const dataAccess = require('./dataAccess.js')
 
-const changelog = fs.readFileSync('changelog.txt');
+const changelog = fs.readFileSync('changelog.md');
 
 const client = new Client({
     intents: [
@@ -113,6 +113,12 @@ client.on('messageCreate', message => {
                         .setDescription(`\`\`\`json\n${dataAccess.guild.get(message.guildId).toJSON()}\`\`\``);
                     message.channel.send({ embeds: [ embuilder ] });
                     break;
+                case 'channel': 
+                    embuilder = new EmbedBuilder()
+                        .setTitle(`Configuration for channel \`${message.channelId}\``)
+                        .setDescription(`\`\`\`json\n${dataAccess.channel.get(message.guildId, message.channelId).toJSON()}\`\`\``);
+                    message.channel.send({ embeds: [ embuilder ] });
+                    break;
             }
             }
             else if (argc == 2) {
@@ -163,7 +169,13 @@ client.on('guildMemberAdd', async (member) => {
 
 client.on('messageReactionAdd', (reaction, user) => {
     if (user.bot) return;
-})
+    if (user = client.user) return;
+    if (!dataAccess.channel.getReactionChannel(reaction)) return;
+    if (reaction.emoji.identifier in dataAccess.channel.getReactionChannel(reaction)
+    .get(`reaction_roles`)) {
+        console.log('here');
+    }
+});
 
 if (process.argv.length > 2) {
     console.log('Logging in using test mode...');

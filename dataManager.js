@@ -7,24 +7,29 @@ function isNumber(obj) {
     return typeof obj === 'number' || obj instanceof Number;
 }
 
-class FileManager {
+class AbstractDataManager {
+    get(k) {}
+    set(k, v) {}
+}
+
+class FileManager extends AbstractDataManager {
     /** 
      * @param {string} base The filename to directly prepend to `id` when performing I/O operations
      * @param {string} suffix The suffix to directly append to `id` when performing I/O operations. Usually a filename extension
     */
     constructor(base, suffix) {
+        super();
         if ((!isString(base)) || (!isString(suffix))) {
             throw new TypeError('`base` and `suffix` must be of type String');
         }
         this.base = base;
         this.suffix = suffix;
-        this.cache = {}; // potentially dangerous because it increasingly uses memory,
-        // shouldn't be a problem for smaller implementations.
+        this.cache = {};
         this.get('default');
     }
     
     _load(id) {
-        // id = this._verify_id(id);
+        // id = FileManager._verify_id(id);
         let data = JSON.parse(fs.readFileSync(this.base + id + this.suffix));
         if (!JSON.stringify(data).startsWith('{')) {
             let type = data.constructor.name;
@@ -44,7 +49,7 @@ class FileManager {
         return data;    
     }
     
-    _verify_id(id) {
+    static _verify_id(id) {
         if (id === undefined || arguments.length == 0) {
             throw new RangeError('Argument `id` is required');
         }
@@ -68,39 +73,46 @@ class FileManager {
      * @returns {DataNode} 
      */
     get(id) {
-        id = this._verify_id(id);
+        id = FileManager._verify_id(id);
         if (id in this.cache) {
             return this.cache[id];
         } else {
             let data = this._load(id);
-            let datanode = new DataNode(this, data);
+            let datanode = new DataNode(data);
             this.cache[id] = datanode;
             return datanode;
         }
     }
-    
+
     /**
      * Reloads the guild data synchronously
      */
     reloadSync(id) { 
-        id = this._verify_id(id);
-        this.cache[id] = new DataNode(this, this._load(id));
+        id = FileManager._verify_id(id);
+        this.cache[id] = new DataNode(this._load(id));
     }
     /**
-     * Reloads the guild data 
+     * Reloads the guild data asynchronously
      */
     async reload(id) {
-        id = await this._verify_id(id);
-        this.cache[id] = await new DataNode(this, this._load(id));
-        return true;
+        id = await FileManager._verify_id(id);
+        this.cache[id] = new DataNode(this._load(id));
+    }
+    unloadSync(id) {
+        id = FileManager._verify_id(id);
+        delete this.cache[id];
+    }
+    async unload(id) {
+        id = await FileManager._verify_id(id);
+        delete this.cache[id];
     }
 
     set(id, value) {
         if (id === 'default') {
             throw new RangeError('cannot write to default');
         }
-        id = this._verify_id(id);
-        data[id] = value;
+        id = FileManager._verify_id(id);
+        if (cache[id]) cache[id].data = value
         fs.writeFile(base + id + suffix, JSON.stringify(value, undefined, 2));
     }
 }
@@ -109,16 +121,7 @@ class DataNode {
     /**
      * @param {FileManager} fileManager
     */
-    constructor(fileManager, data = undefined, id = undefined) { 
-        if (fileManager === undefined) {
-            throw new RangeError('FileManager is a required argument')
-        }
-        
-        if (fileManager instanceof FileManager) {
-            this.fileManager = fileManager;
-        } else {
-            throw new TypeError('Expected FileManager, found ' + fileManager.constructor.name + ' instead');
-        }
+    constructor(data = undefined, id = undefined) { 
         if (isString(data)) {
             data = JSON.parse(data);
         }
@@ -142,7 +145,7 @@ class DataNode {
     /**
      * @param {Array | string} keys
      */
-    _keysToArray(keys) {
+    static _keysToArray(keys) {
         if (keys instanceof Array) {
             keys.forEach((val) => {
                 if (!isString(val)) 
@@ -162,7 +165,7 @@ class DataNode {
      * @returns {object | string | Array}
      */
     get(keys) {
-        keys = this._keysToArray(keys);
+        keys = DataNode._keysToArray(keys);
         let data = this.data;
         for (const k of keys) {
             if (data === undefined) {
@@ -181,7 +184,7 @@ class DataNode {
      * @param {*} value
      */
     set(keys, value) {
-        keys = this._keysToArray(keys);
+        keys = DataNode._keysToArray(keys);
         if (keys.length > 1) {
             this.get(keys.slice(0, keys.length - 1))[keys[keys.length - 1]] = value;
         } else if (keys.length == 1) {
