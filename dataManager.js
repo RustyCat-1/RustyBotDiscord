@@ -7,12 +7,20 @@ function isNumber(obj) {
     return typeof obj === 'number' || obj instanceof Number;
 }
 
-class AbstractDataManager {
+class DataManager {
+    constructor() { this.cache = {}; }
     get(k) {}
     set(k, v) {}
+    _load(k) {}
+    reloadSync(k) { this.cache[k] = new DataNode(this._load(k)); }
+    async reload(k) { this.cache[k] = new DataNode(this._load(k)); }
+    unloadSync(k) { delete this.cache[k]; }
+    async unload(k) { delete this.cache[k]; }
+    clearSync() { this.cache = {}; }
+    async clear() { this.cache = {}; }
 }
 
-class FileManager extends AbstractDataManager {
+class FileManager extends DataManager {
     /** 
      * @param {string} base The filename to directly prepend to `id` when performing I/O operations
      * @param {string} suffix The suffix to directly append to `id` when performing I/O operations. Usually a filename extension
@@ -50,19 +58,19 @@ class FileManager extends AbstractDataManager {
     }
     
     static _verify_id(id) {
-        if (id === undefined || arguments.length == 0) {
-            throw new RangeError('Argument `id` is required');
+        if (!id) {
+            throw new RangeError('`id` is required');
         }
-        let message = '';
+        let errMsg = '';
         if (!isString(id)) {
             throw new TypeError('Expected String, found ' + id.constructor.name + ' instead');
         } else if (id === '') {
-            message = '`id` cannot be empty';
+            errMsg = '`id` cannot be empty';
         } else if (/(^(\/|\\)?|(\/|\\))\.\.(\/|\\)|(\<|\>|\:|\"|\||\?|\*|\n)|^ | $/.test(id)) { // security; we don't want someone to write to a system file!
-            message = 'Invalid `id` value: Illegal characters';
+            errMsg = 'Invalid `id` value: Illegal characters';
         } 
-        if (message != '') {
-            throw new RangeError(message);
+        if (errMsg != '') {
+            throw new RangeError(errMsg);
         }
         return id;
     }
@@ -82,29 +90,6 @@ class FileManager extends AbstractDataManager {
             this.cache[id] = datanode;
             return datanode;
         }
-    }
-
-    /**
-     * Reloads the guild data synchronously
-     */
-    reloadSync(id) { 
-        id = FileManager._verify_id(id);
-        this.cache[id] = new DataNode(this._load(id));
-    }
-    /**
-     * Reloads the guild data asynchronously
-     */
-    async reload(id) {
-        id = await FileManager._verify_id(id);
-        this.cache[id] = new DataNode(this._load(id));
-    }
-    unloadSync(id) {
-        id = FileManager._verify_id(id);
-        delete this.cache[id];
-    }
-    async unload(id) {
-        id = await FileManager._verify_id(id);
-        delete this.cache[id];
     }
 
     set(id, value) {
@@ -195,12 +180,12 @@ class DataNode {
     }
     
     /**
-     * @returns {string} A string-JSON representation of this object's contents.
+     * @returns {string} A JSON string representation of this object's contents.
     */
     toJSON() {
-        return JSON.stringify(this.data, undefined, 2);
+        return JSON.stringify(this.data);
     }
 
 }
 
-module.exports = { FileManager: FileManager, DataNode: DataNode };
+module.exports = { FileManager: FileManager, DataNode: DataNode, DataManager: DataManager };

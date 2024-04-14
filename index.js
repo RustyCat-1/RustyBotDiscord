@@ -5,10 +5,11 @@ const fs = require('node:fs');
 const tokenFile = require('./token.json');
 const configFile = require('./config.json');
 
+const commands = require('./commands');
 const ping = require('./commands/ping.js');
 const whyBlacklist = require('./commands/whyBlacklist.js');
 const help = require('./commands/help.js');
-const dataAccess = require('./dataAccess.js')
+const dataAccess = require('./dataAccess.js');
 
 const changelog = fs.readFileSync('changelog.md');
 
@@ -27,8 +28,8 @@ const client = new Client({
 const blacklist = require('../data/blacklist.json');
 
 client.on('ready', () => {
-    console.log('Bot ready!')
-    client.user.setStatus('available')
+    console.log('Bot ready!');
+    client.user.setStatus('available');
     if (configFile.mode === 'production')
         client.user.setActivity(
             'r.help | https://discord.gg/9MHJppvmma',
@@ -110,21 +111,24 @@ client.on('messageCreate', message => {
                 case 'guild':
                     embuilder = new EmbedBuilder()
                         .setTitle(`Configuration for server \`${message.guildId}\``)
-                        .setDescription(`\`\`\`json\n${dataAccess.guild.get(message.guildId).toJSON()}\`\`\``);
+                        .setDescription(`\`\`\`json\n${JSON.stringify(dataAccess.guild.get(message.guildId).get('config'))}\`\`\``)
+                        .setFooter({text: 'Note: Configuration only includes data stored within the object \`config\` contained within the datafile and does not include other server data.'});
                     message.channel.send({ embeds: [ embuilder ] });
                     break;
                 case 'channel': 
                     embuilder = new EmbedBuilder()
                         .setTitle(`Configuration for channel \`${message.channelId}\``)
-                        .setDescription(`\`\`\`json\n${dataAccess.channel.get(message.guildId, message.channelId).toJSON()}\`\`\``);
+                        .setDescription(`\`\`\`json\n${JSON.stringify(dataAccess.guildChannel.get(message.guildId, message.channelId).get('config'))}\`\`\``)
+                        .setFooter({text: 'Note: Configuration only includes data stored within the object \`config\` contained within the datafile and does not include other channel data.'});
                     message.channel.send({ embeds: [ embuilder ] });
                     break;
             }
-            }
-            else if (argc == 2) {
+            } else if (argc == 2) {
                 if (argv[0] === 'guild' && argv[1] === 'reload') {
                     dataAccess.guild.reload(message.guildId).then(() => {
-                        message .channel.send(`Data for server \`${message.guildId}\` has successfully been reloaded!`);
+                        dataAccess.guildChannel.unloadSync(message.channelId);
+                    }).then(async () => {
+                        message.channel.send(`Data for server \`${message.guildId}\` has successfully been reloaded!`);
                     }).catch((error) => {
                         message.channel.send(`An error occurred whilst reloading server data for \`${message.guildId}\`.`);
                     });
@@ -141,7 +145,7 @@ client.on('messageCreate', message => {
                     embuilder = new EmbedBuilder().setTitle('An error occurred. Please try again.')
                 }
                 message.channel.send({ embeds: [ embuilder ] });
-                }
+            }
         } else if (base === 'whyBlacklist') {
             whyBlacklist.info(message);
         } else if (base === 'changelog') {
@@ -150,7 +154,7 @@ client.on('messageCreate', message => {
             message.channel.send({ embeds: [ embuilder ] });
         } else {
             const embuilder = new EmbedBuilder()
-            .setDescription(`Command \`${base}\` is not a valid command.`);
+            .setDescription(`\`${base}\` is not a valid command.`);
             message.channel.send({ embeds: [ embuilder ] });
         }
     }
@@ -158,22 +162,30 @@ client.on('messageCreate', message => {
 
 client.on('guildMemberAdd', async (member) => {
     try {
-        let wel_chan = dataAccess.guild.get(member.guild.id).get('config.welcome_channel');
-        if (!wel_chan) return;
-        let c = await client.channels.fetch(wel_chan.toString());
-        c.send(`Welcome <@${member.user.id}> to <@${member.guild.name}>!`);
+        let welcomeChannel = dataAccess.guild.get(member.guild.id).get('config.welcome_channel');
+        if (!welcomeChannel) return;
+        let channel = await client.channels.fetch(welcomeChannel.toString());
+        channel.send(`Welcome <@${member.user.id}> to ${member.guild.name}!`);
     } catch (e) {
         console.error(e);
     }
 });
 
-client.on('messageReactionAdd', (reaction, user) => {
-    if (user.bot) return;
-    if (user = client.user) return;
-    if (!dataAccess.channel.getReactionChannel(reaction)) return;
-    if (reaction.emoji.identifier in dataAccess.channel.getReactionChannel(reaction)
-    .get(`reaction_roles`)) {
-        console.log('here');
+client.on('messageReactionAdd', async (reaction, user) => {
+    if(reaction.message.partial) await reaction.message.fetch();
+    if(reaction.partial) await reaction.fetch();
+
+    let channel = reaction.message.channel;
+
+    if(user.bot) return;
+    if(!reaction.message.guild) return;
+
+    if(!reaction.message.channel) {console.err('undef');return;}
+
+    if(reaction.message.channel.id in dataAccess.guildChannel.getFromObj(channel).get('reaction_roles')) {
+        if(reaction.message.id in dataAccess.guildChannel.getFromObj(channel).get(`reaction_roles.${reaction.message.channel.id}`)) {
+            message.channel.send('Success! You have')
+        }
     }
 });
 

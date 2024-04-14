@@ -2,10 +2,11 @@ const { EmbedBuilder } = require('discord.js');
 // const fs = require('node:fs')
 const config = require('../config.json')
 const docs = require('./help/docs.json');
-const prefix = config.prefix
+const guildData = require('../dataAccess').guild;
 
 module.exports = {
     command: (message) => {
+        const prefix = guildData.get(message.guildId).get('config.prefix');
         commandsList = `ping
 status
 help
@@ -16,7 +17,7 @@ config`
             .setDescription(`
             Type \`${prefix}help <command>\` for help on a specific command
             Support: <#1125279778325417984> (join [Our Discord Server](https://discord.gg/9MHJppvmma))
-            Prefix: \`${prefix}\` (fixed, not changeable)
+            Prefix: \`${prefix}\`
             List of commands:
             \`${commandsList}\`
             `);
