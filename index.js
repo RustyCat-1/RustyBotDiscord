@@ -181,10 +181,13 @@ client.on('messageReactionAdd', async (reaction, user) => {
     if(!reaction.message.guild) return;
 
     if(!reaction.message.channel) {console.err('undef');return;}
-
-    if(reaction.message.channel.id in dataAccess.guildChannel.getFromObj(channel).get('reaction_roles')) {
-        if(reaction.message.id in dataAccess.guildChannel.getFromObj(channel).get(`reaction_roles.${reaction.message.channel.id}`)) {
-            message.channel.send('Success! You have')
+    console.log('d');
+    console.log(reaction.message.channelId)
+    console.log(dataAccess.guildChannel.getFromObj(channel))
+    if(reaction.message.id in dataAccess.guildChannel.getFromObj(channel).get('reaction_roles')) {
+        reaction.message.channel.send('`cahnenl`');
+        if(dataAccess.guildChannel.getFromObj(channel).get('reaction_roles') && reaction.message.id in dataAccess.guildChannel.getFromObj(channel).get(`reaction_roles.${reaction.message.id}`)) {
+            reaction.message.channel.send('Success! You have done it!');
         }
     }
 });

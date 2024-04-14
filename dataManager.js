@@ -9,8 +9,19 @@ function isNumber(obj) {
 
 class DataManager {
     constructor() { this.cache = {}; }
-    get(k) {}
-    set(k, v) {}
+    get(k) {
+        if (k in this.cache) {
+            return this.cache[k];
+        }
+        let data = this._load(id);
+        if(data === undefined) return;
+        this.cache[id] = new DataNode(data);
+        return this.cache[id];
+    }
+    set(k, v) { 
+        if (cache[k]) cache[k].data = v;
+        else this.cache[id] = new DataNode(v);
+    }
     _load(k) {}
     reloadSync(k) { this.cache[k] = new DataNode(this._load(k)); }
     async reload(k) { this.cache[k] = new DataNode(this._load(k)); }
@@ -52,7 +63,7 @@ class FileManager extends DataManager {
                     type = 'string';
                     break;
             }
-            throw new TypeError('Error while loading data ' + id + '; expected object, found ' + type + ' instead');
+            throw new TypeError(`Error while loading ${id}; expected object, found ${type} instead`);
         }
         return data;    
     }
@@ -104,7 +115,7 @@ class FileManager extends DataManager {
 
 class DataNode {
     /**
-     * @param {FileManager} fileManager
+     * data node
     */
     constructor(data = undefined, id = undefined) { 
         if (isString(data)) {

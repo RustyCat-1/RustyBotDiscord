@@ -10,6 +10,7 @@ class GuildChannelDataManager extends dataManager.DataManager {
         return dataManager.FileManager._verify_id(id)
     }
     _load(guildId, channelId) {
+        super._load();
         return module.exports.guild.get(guildId) ? module.exports.guild.get(guildId).get(`channels.${channelId}`) : undefined;
     }
     get(guildId, channelId) {
@@ -19,6 +20,7 @@ class GuildChannelDataManager extends dataManager.DataManager {
         } else {
             let data = this._load(guildId, channelId);
             if(!data) return undefined;
+            if(!data[guildId]) this.cache[guildId] = {};
             let datanode = new dataManager.DataNode(data);
             this.cache[guildId][channelId] = datanode;
             return datanode;
