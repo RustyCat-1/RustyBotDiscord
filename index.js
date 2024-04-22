@@ -1,5 +1,5 @@
 const Discord = require('discord.js');
-const { Client, GatewayIntentBits, ActivityType, EmbedBuilder } = require('discord.js');
+const { Client, Partials, GatewayIntentBits, ActivityType, EmbedBuilder } = require('discord.js');
 const fs = require('node:fs');
 
 const tokenFile = require('./token.json');
@@ -22,6 +22,11 @@ const client = new Client({
         GatewayIntentBits.GuildMessageReactions,
         GatewayIntentBits.DirectMessages,
         GatewayIntentBits.DirectMessageReactions
+    ],
+    partials: [
+        Partials.Channel,
+        Partials.Message,
+        Partials.Reaction
     ]
 });
 
@@ -42,7 +47,8 @@ client.on('ready', () => {
         );
 });
 
-client.on('messageCreate', message => {
+client.on('messageCreate', async message => {
+    if (message.partial) await message.fetch();
     if (message.author.bot) return;
     if (message.guildId in blacklist.guilds ||
         message.author.id in blacklist.users) {
@@ -64,7 +70,7 @@ client.on('messageCreate', message => {
 
     if (message.content.startsWith(prefix)) {
         const command = message.content.slice(prefix.length);
-        const splits = command.split(' ');
+        const splits = command.split(/ +/);
         const base = splits[0];
         const argv = splits.slice(1);
         const argc = argv.length;
@@ -172,22 +178,22 @@ client.on('guildMemberAdd', async (member) => {
 });
 
 client.on('messageReactionAdd', async (reaction, user) => {
-    if(reaction.message.partial) await reaction.message.fetch();
-    if(reaction.partial) await reaction.fetch();
+    if (reaction.message.partial) await reaction.message.fetch();
+    if (reaction.partial) await reaction.fetch();
 
     let channel = reaction.message.channel;
 
-    if(user.bot) return;
-    if(!reaction.message.guild) return;
+    if (user.bot) return;
+    if (!reaction.message.guild) return;
 
-    if(!reaction.message.channel) {console.err('undef');return;}
-    console.log('d');
-    console.log(reaction.message.channelId)
-    console.log(dataAccess.guildChannel.getFromObj(channel))
-    if(reaction.message.id in dataAccess.guildChannel.getFromObj(channel).get('reaction_roles')) {
-        reaction.message.channel.send('`cahnenl`');
-        if(dataAccess.guildChannel.getFromObj(channel).get('reaction_roles') && reaction.message.id in dataAccess.guildChannel.getFromObj(channel).get(`reaction_roles.${reaction.message.id}`)) {
-            reaction.message.channel.send('Success! You have done it!');
+    if (!reaction.message.channel) { console.err('its undefined'); return;}
+    if (!dataAccess.guildChannel.getFromObj(channel)) return;
+    if (reaction.message.id in dataAccess.guildChannel.getFromObj(channel).get('reaction_roles')) {
+        if (reaction.emoji in dataAccess.guildChannel.getFromObj(channel).get(`reaction_roles.${reaction.message.id}`)) {
+            reaction.message.guild.members.fetch(user).addRole(reaction.message.guild.roles.cache.get(
+                dataAccess.guildChannel.getFromObj(channel)
+                .get(`reaction_roles.${reaction.message.id}.${reaction.emoji}`))
+            )
         }
     }
 });
