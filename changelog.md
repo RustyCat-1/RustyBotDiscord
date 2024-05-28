@@ -1,6 +1,11 @@
-## Version 0.4
-`r.config`'s guild feature now works, bringing `welcome_channel` with it as the first config-dependent feature.
+## Version 0.5a
+I am working on a migration from `.command()` to `.execute()`, along with changing all commands to be stored in an object and be called as `execute(message, args)`. 
 
-On the TODO list is reaction roles and moderation commands.
+Userinfo command added.
+
+TODO:
+- Logic for inside DMs rather than GuildTextChannel's.
+- Reaction roles
+- Timeout, kick, ban (contrary to userinfo, it is to work only with userID/ping, to avoid banning the wrong user)
 
 Rewordings, bugfixes, enhancements, etc.

@@ -75,7 +75,7 @@ client.on('messageCreate', async message => {
         const argv = splits.slice(1);
         const argc = argv.length;
         if (base === 'ping') {
-            ping.command(message, client.ws.ping);
+            ping.execute(message, client.ws.ping);
         } else if (base === 'status') {
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Status')
@@ -90,7 +90,7 @@ client.on('messageCreate', async message => {
             if (argc > 0) {
                 help.docs(message, argv[0]);
             } else {
-                help.command(message);
+                help.execute(message);
             }
         } else if (base === 'invite') {
             const embuilder = new EmbedBuilder()
@@ -148,7 +148,7 @@ client.on('messageCreate', async message => {
                     \`\`\`${JSON.stringify(dataAccess.guild.get(message.guildId).get(argv[1]))}\`\`\`
                     `);
                 } catch (TypeError) {
-                    embuilder = new EmbedBuilder().setTitle('An error occurred. Please try again.')
+                    embuilder = new EmbedBuilder().setTitle('Error').setDescription('An error occurred. Please try again.')
                 }
                 message.channel.send({ embeds: [ embuilder ] });
             }
@@ -158,6 +158,8 @@ client.on('messageCreate', async message => {
             const embuilder = new EmbedBuilder()
             .setDescription(changelog);
             message.channel.send({ embeds: [ embuilder ] });
+        } else if (base in commands) {
+            commands[base].execute(message, argv);
         } else {
             const embuilder = new EmbedBuilder()
             .setDescription(`\`${base}\` is not a valid command.`);

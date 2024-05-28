@@ -1,5 +1,5 @@
 module.exports = {
-    command: () => {
+    execute: () => {
         if (argc == 0) {
             message.channel.send('Syntax is as follows:\n \`r.config (user|guild|channel) <key> [value]\`')
         }

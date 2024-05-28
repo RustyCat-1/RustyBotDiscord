@@ -5,7 +5,7 @@ const docs = require('./help/docs.json');
 const guildData = require('../dataAccess').guild;
 
 module.exports = {
-    command: (message) => {
+    execute: (message) => {
         const prefix = guildData.get(message.guildId).get('config.prefix');
         commandsList = `ping
 status

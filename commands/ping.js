@@ -1,7 +1,7 @@
 const Discord = require('discord.js')
 
 module.exports = {
-    command: function(recievedMessage, clientPing) {
+    execute: function(recievedMessage, clientPing) {
         const emBuilder = new Discord.EmbedBuilder()
         .setTitle('RustyBot Latency Test')
         .setDescription(`

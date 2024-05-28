@@ -1,16 +1,15 @@
 const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
-    command: (message) => {
+    execute: (message) => {
         const client = message.client
         if (message.content.startsWith(prefix)) {
             emBuilder = new EmbedBuilder()
             .setTitle('Server blacklist detected!')
-            .setDescription(`We are sorry for the inconvience but our bot is blacklisted on this server. Please join [our support server](https://discord.gg/9MHJppvmma) to run commands. 
-    Type \`r.whyBlacklist\` or ping <@${client.user.id}> for more information.`)
+            .setDescription(`We are sorry for the inconvience but our bot is blacklisted on this server.
+Type \`r.whyBlacklist\` or ping <@${client.user.id}> for more information.`)
             message.channel.send({ embeds: [ emBuilder ]});
-        }
-        if (message.content == `<@${client.user.id}>` || message.content == `r.whyBlacklist`) {
+        } else if (message.content == `<@${client.user.id}>` || message.content == `r.whyBlacklist`) {
             this.info();
         }
     },
