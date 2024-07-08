@@ -6,7 +6,7 @@ module.exports = {
     debugMessage: (c, m) => {
         if (!token.debug) return;
         if (!c instanceof Discord.BaseChannel) {
-            throw new TypeError('c instanceof BaseChannel must be true');
+            throw new TypeError('Error 32767');
         }
         c.send(`DEBUG: ${m}`);
     },
@@ -25,10 +25,16 @@ module.exports = {
             id = userString.slice(2, userString.length - 1);
         }
         if (id) {
-            return await guild.members.fetch(id);
+            try {
+                return await guild.members.fetch(id);
+            } catch (e) {
+                if (!e instanceof Discord.DiscordAPIError) throw e
+                // if it's an API error we assume it's that the user id was invalid, so we ignore it
+            }
         }
+        let usernameSearch = guild.members.cache.find(member => member.user.tag === query)
         let coll = await guild.members.search({query: userString, limit: 1});
-        return coll.size === 0 ? null : coll.first();
+        if (coll.size !== 0) return coll.first()
     },
     /**
      * @param {Date} date

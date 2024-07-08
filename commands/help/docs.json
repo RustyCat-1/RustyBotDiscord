@@ -7,13 +7,10 @@
         "syntax": "help [command]"
     },
     "status": {
-        "description": "Makes sure the bot is online."
-    },
-    "invite": {
-        "description": "Returns the invite links for the bot."
+        "description": "Verify the online and working status of the bot."
     },
     "config": {
         "description": "Gets a configuration value.",
-        "syntax": "r.config (user|guild|channel) <key> [value]"
+        "syntax": "r.config (user|guild|channel) (get|set) <key> [value]"
     }
 }

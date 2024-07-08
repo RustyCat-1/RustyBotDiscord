@@ -5,27 +5,26 @@ const docs = require('./help/docs.json');
 const guildData = require('../dataAccess').guild;
 
 module.exports = {
-    execute: (message) => {
+    execute: (message, argv) => {
+        if (argv.length > 0) {
+            module.exports.docs(message, argv);
+            return;
+        }
         const prefix = guildData.get(message.guildId).get('config.prefix');
-        commandsList = `ping
-status
-help
-invite
-config`
         const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Help')
             .setDescription(`
+            RustyBot is a multipurpose bot that is being developed by Rusty as a fun coding project! 
+            Of course, it is still in development, so the featureset is very limited. 
             Type \`${prefix}help <command>\` for help on a specific command
-            Support: <#1125279778325417984> (join [Our Discord Server](https://discord.gg/9MHJppvmma))
             Prefix: \`${prefix}\`
-            List of commands:
-            \`${commandsList}\`
             `);
         message.channel.send({ embeds: [ embuilder ] });
     },
-    docs: (message, command) => {
+    docs: (message, argv) => {
+        command = argv[0]
         let embuilder;
-        if (docs[command] !== undefined) {
+        if (docs[argv[0]]) {
             embuilder = new EmbedBuilder()
                 .setTitle(`Command ${command}`)
                 .setDescription(`**Description**:
@@ -33,7 +32,7 @@ config`
         } else {
             embuilder = new EmbedBuilder()
                 .setTitle(`Command ${command}`)
-                .setDescription('Information could not be found on this command. Make sure you typed it correctly!')
+                .setDescription('FATAL: Information could not be found on this command. Make sure you typed it correctly!')
                 .setTimestamp();
         }
         message.channel.send({ embeds: [ embuilder ] });

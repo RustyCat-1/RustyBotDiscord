@@ -11,7 +11,7 @@ const whyBlacklist = require('./commands/whyBlacklist.js');
 const help = require('./commands/help.js');
 const dataAccess = require('./dataAccess.js');
 
-const changelog = fs.readFileSync('changelog.md');
+const changelog = fs.readFileSync('changelog.md', 'utf8');
 
 const client = new Client({
     intents: [
@@ -55,27 +55,32 @@ client.on('messageCreate', async message => {
         return;
     }
 
+    if (message.channel instanceof Discord.DMChannel) {
+        message.channel.send('RustyBot is designed for use in servers and will break when used in DMs. Please check back in the future to see if DM support has been added.')
+        return;
+    }
+
     if ((message.mentions.users.length > 0 && message.mentions.users.first().id === client.user.id) ||
      message.content === `<@${client.user.id}>` ) {
         var emBuilder = new EmbedBuilder()
         .setTitle('Hi, welcome to RustyBot!')
         .setDescription('Type r.help to get started!')
     message.channel.send({ 
-            'content': `If you can\'t see anything below this message, you need to turn go to \`Settings\` -> \`Text & Images\` and enable \`Embeds and Link Previews\`.`,
+            'content': `If you can\'t see anything below this message, you may need to turn go to your \`User Settings\` -> \`Text & Images\` and enable \`Embeds and Link Previews\`.`,
             'embeds': [ emBuilder ] });
         return;
     }
 
     const prefix = dataAccess.guild.get(message.guildId).get('config.prefix') || `<@${client.user.id}> `;
 
-    if (message.content.startsWith(prefix)) {
+    if (message.content.startsWith(prefix) && message.content.length > prefix.length) {
         const command = message.content.slice(prefix.length);
         const splits = command.split(/ +/);
         const base = splits[0];
         const argv = splits.slice(1);
         const argc = argv.length;
         if (base === 'ping') {
-            ping.execute(message, client.ws.ping);
+            ping.execute(message);
         } else if (base === 'status') {
             const embuilder = new EmbedBuilder()
             .setTitle('RustyBot Status')
@@ -86,12 +91,6 @@ client.on('messageCreate', async message => {
             `);
 
             message.channel.send({ embeds: [ embuilder ] });
-        } else if (base === 'help') {
-            if (argc > 0) {
-                help.docs(message, argv[0]);
-            } else {
-                help.execute(message);
-            }
         } else if (base === 'invite') {
             const embuilder = new EmbedBuilder()
             .setTitle('Invites:')
@@ -128,7 +127,7 @@ client.on('messageCreate', async message => {
                         .setFooter({text: 'Note: Configuration only includes data stored within the object \`config\` contained within the datafile and does not include other channel data.'});
                     message.channel.send({ embeds: [ embuilder ] });
                     break;
-            }
+                }
             } else if (argc == 2) {
                 if (argv[0] === 'guild' && argv[1] === 'reload') {
                     dataAccess.guild.reload(message.guildId).then(() => {
@@ -162,7 +161,7 @@ client.on('messageCreate', async message => {
             commands[base].execute(message, argv);
         } else {
             const embuilder = new EmbedBuilder()
-            .setDescription(`\`${base}\` is not a valid command.`);
+            .setDescription(`\`${base}\` is not a valid command. Make sure you have typed it correctly!`);
             message.channel.send({ embeds: [ embuilder ] });
         }
     }

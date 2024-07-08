@@ -2,20 +2,21 @@ const { EmbedBuilder } = require('discord.js');
 const util = require('../util.js')
 
 module.exports = {
+    'config': require('./config'),
     'help': require('./help'),
     'ping': require('./ping'),
     'whyBlacklist': require('./whyBlacklist'),
-    'userinfo': {
+    'memberinfo': {
         execute: async (message, args) => {
             if (args.length == 0) {
-                message.channel.send('You need to pass a user to lookup to the command.');
+                message.channel.send('WARN: Please pass a user to lookup to the command.');
             } else {
                 let query = args.join(' ')
                 message.channel.sendTyping();
                 let member = await util.findGuildMember(message.guild, query);
                 util.debugMessage(message.channel, member);
-                if (member == null) {
-                    message.channel.send('Member could not be found.');
+                if (!member) {
+                    message.channel.send('FATAL: Member could not be found.');
                     return;
                 }
                 await member.fetch();
@@ -28,7 +29,6 @@ module.exports = {
                 Display name/Nickname: \`${member.displayName}\`
                 Tag: \`${member.user.tag}\`
                 Joined server: ${await util.formatDate(member.joinedAt)}
-                Currently in timeout? ${member.communicationDisabledUntil !== null ? '✅' : '❌'}
                 `);
                 message.channel.send({embeds: [embuilder]});
             }
